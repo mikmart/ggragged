@@ -4,15 +4,12 @@
 \alias{facet_ragged_rows}
 \title{Lay out panels in a grid of ragged rows}
 \usage{
-facet_ragged_rows(rows, cols, ncol = NULL, labeller = "label_value")
+facet_ragged_rows(rows, cols, labeller = "label_value")
 }
 \arguments{
 \item{rows, cols}{A set of variables or expressions quoted by \code{\link[ggplot2:vars]{ggplot2::vars()}},
 the combinations of which define panels to be inlcuded in the grid. Panels
 for \code{cols} are wrapped independently within \code{rows} to form a ragged grid.}
-
-\item{ncol}{Number of columns on a row. If the number of panels on a row
-exceeds this, the remaining panels will be wrapped on to a new row.}
 
 \item{labeller}{A function that takes one data frame of labels and
 returns a list or data frame of character vectors. Each input
@@ -36,13 +33,5 @@ p + facet_ragged_rows(
   vars(Cohort = 1 + Subject \%in\% 3:6),
   vars(Subject = as.character(Subject)),
   labeller = label_both
-)
-
-# Specify ncol to wrap long rows
-p + facet_ragged_rows(
-  vars(Cohort = 1 + Subject \%in\% 3:6),
-  vars(Subject = as.character(Subject)),
-  labeller = label_both,
-  ncol = 3
 )
 }

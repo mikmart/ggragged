@@ -3,8 +3,6 @@
 #' @param rows,cols A set of variables or expressions quoted by [ggplot2::vars()],
 #'   the combinations of which define panels to be inlcuded in the grid. Panels
 #'   for `cols` are wrapped independently within `rows` to form a ragged grid.
-#' @param ncol Number of columns on a row. If the number of panels on a row
-#'   exceeds this, the remaining panels will be wrapped on to a new row.
 #' @inheritParams ggplot2::facet_wrap
 #'
 #' @examples
@@ -16,23 +14,14 @@
 #'   vars(Subject = as.character(Subject)),
 #'   labeller = label_both
 #' )
-#'
-#' # Specify ncol to wrap long rows
-#' p + facet_ragged_rows(
-#'   vars(Cohort = 1 + Subject %in% 3:6),
-#'   vars(Subject = as.character(Subject)),
-#'   labeller = label_both,
-#'   ncol = 3
-#' )
 #' @export
-facet_ragged_rows <- function(rows, cols, ncol = NULL, labeller = "label_value") {
+facet_ragged_rows <- function(rows, cols, labeller = "label_value") {
   ggproto(
     NULL,
     FacetRaggedRows,
     params = list(
       rows = rlang::quos_auto_name(rows),
       cols = rlang::quos_auto_name(cols),
-      ncol = ncol,
       labeller = labeller
     )
   )
@@ -75,13 +64,6 @@ FacetRaggedRows <- ggproto(
     i <- rep(seq_along(n), n)
     j <- sequence(n)
 
-    # Wrap rows within groups
-    if (!is.null(params$ncol)) {
-      k <- 1L + (j - 1L) %/% params$ncol
-      j <- 1L + (j - 1L) %% params$ncol
-      i <- i + cumsum((k > 1) & (j == 1))
-    }
-
     layout <- data.frame(
       PANEL = panel_id,
       ROW = i,
@@ -101,9 +83,8 @@ FacetRaggedRows <- ggproto(
     panel_table <- FacetWrap$draw_panels(panels, layout, x_scales, y_scales, ranges, coord, data, theme, params)
 
     # Render strips for rows. facet_wrap doesn't know about these.
-    # Vars could be wrapped across multiple layout rows if ncol is set.
-    layout_rows <- vctrs::vec_unique(layout[c("ROW", names(params$rows))])
-    strips <- render_strips(NULL, layout_rows[-1L], params$labeller, theme)
+    strip_data_rows <- vctrs::vec_unique(layout[names(params$rows)])
+    strips <- render_strips(NULL, strip_data_rows, params$labeller, theme)
 
     # For each row, find the furthest out column to add strips to.
     strip_layout <- dplyr::summarise(dplyr::group_by(layout, ROW), COL = max(COL))

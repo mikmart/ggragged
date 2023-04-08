@@ -87,14 +87,15 @@ FacetRaggedRows <- ggproto(
     strips <- render_strips(NULL, strip_data_rows, params$labeller, theme)
 
     # For each row, find the furthest out column to add strips to.
-    strip_layout <- dplyr::summarise(dplyr::group_by(layout, ROW), COL = max(COL))
+    strip_layout_row <- tapply(layout$ROW, layout$ROW, head, 1)
+    strip_layout_col <- tapply(layout$COL, layout$ROW, max)
+    strip_name <- sprintf("strip-r-%d", strip_layout_row)
 
     # Map strip position in layout to position in gtable.
     panel_pos_rows <- panel_rows(panel_table)
     panel_pos_cols <- panel_cols(panel_table)
-    strip_pos_t <- panel_pos_rows$t[strip_layout$ROW]
-    strip_pos_l <- panel_pos_cols$r[strip_layout$COL] + 1
-    strip_name <- sprintf("strip-r-%d", strip_layout$ROW)
+    strip_pos_t <- panel_pos_rows$t[strip_layout_row]
+    strip_pos_l <- panel_pos_cols$r[strip_layout_col] + 1
 
     # Justify strips to start at the edge of the panel.
     strips$y$right <- lapply(strips$y$right, function(strip) {

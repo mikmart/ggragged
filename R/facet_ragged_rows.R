@@ -86,24 +86,28 @@ FacetRaggedRows <- ggproto(
     strip_data_rows <- vctrs::vec_unique(layout[names(params$rows)])
     strips <- render_strips(NULL, strip_data_rows, params$labeller, theme)
 
-    # For each row, find the furthest out column to add strips to.
+    # For each row, find the farthest out column to add strips to
     strip_layout_row <- tapply(layout$ROW, layout$ROW, head, 1)
     strip_layout_col <- tapply(layout$COL, layout$ROW, max)
     strip_name <- sprintf("strip-r-%d", strip_layout_row)
 
-    # Map strip position in layout to position in gtable.
+    # Map strip position in layout to position in gtable
     panel_pos_rows <- panel_rows(panel_table)
     panel_pos_cols <- panel_cols(panel_table)
     strip_pos_t <- panel_pos_rows$t[strip_layout_row]
     strip_pos_l <- panel_pos_cols$r[strip_layout_col] + 1
 
-    # Justify strips to start at the edge of the panel.
+    # Justify strips to start at the right edge of the panels
     strips$y$right <- lapply(strips$y$right, function(strip) {
+      # Strips can be zeroGrobs if e.g. text is element_blank()
+      if (!inherits(strip, "gtable")) {
+        return(strip)
+      }
       gtable_add_cols(strip, gtable_width(strip), 0)
     })
 
-    # Add strips identifying the row variable to farthest out panels on each row.
-    panel_table <- gtable_add_cols(panel_table, max_width(strips$y$right) / 2, max(strip_pos_l) + 1)
+    # Add space in the margin for farthest out strips, and then strip grobs
+    panel_table <- gtable_add_cols(panel_table, max_width(strips$y$right) / 2, max(strip_pos_l))
     panel_table <- gtable_add_grob(panel_table, strips$y$right, strip_pos_t, strip_pos_l, clip = "off", name = strip_name, z = 2)
 
     panel_table

@@ -1,22 +1,5 @@
-#' Lay out panels in a grid of ragged rows
-#'
-#' @param rows,cols A set of variables or expressions quoted by [ggplot2::vars()],
-#'   the combinations of which define panels to be included in the grid.
-#' @param scales Should all panels share the same scales (`"fixed"`),
-#'   x-axes vary between panels (`"free_x"`),
-#'   y-axes vary between rows (`"free_y"`), or both (`"free"`)?
-#' @inheritParams ggplot2::facet_wrap
-#'
-#' @family ragged grids
-#' @examples
-#' p <- ggplot(Indometh, aes(time, conc)) + geom_line()
-#'
-#' # Ragged grid with cohorts on separate rows
-#' p + facet_ragged_rows(
-#'   vars(Cohort = 1 + Subject %in% 3:6),
-#'   vars(Subject = as.character(Subject)),
-#'   labeller = label_both
-#' )
+#' @include facet_ragged.R
+#' @rdname facet_ragged
 #' @export
 facet_ragged_rows <- function(rows, cols, scales = "fixed", labeller = "label_value") {
   scales <- rlang::arg_match(scales, c("fixed", "free_x", "free_y", "free"))

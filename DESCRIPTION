@@ -16,3 +16,8 @@ Imports:
     vctrs
 Depends: 
     ggplot2
+Collate: 
+    'facet_ragged.R'
+    'facet_ragged_rows.R'
+    'facet_ragged_cols.R'
+    'ggragged-package.R'

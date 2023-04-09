@@ -76,12 +76,12 @@ FacetRaggedCols <- ggproto(
       FacetWrap$draw_panels(panels, layout, x_scales, y_scales, ranges, coord, data, theme, params)
     })
 
-    # Render strips for cols facet_wrap doesn't know about these.
+    # Render strips for cols. facet_wrap doesn't know about these.
     strip_data_cols <- vctrs::vec_unique(layout[names(params$cols)])
     strips <- render_strips(strip_data_cols, NULL, params$labeller, theme)
 
-    # For each row, find the farthest out column to add strips to
-    strip_layout_col <- vctrs::vec_unique(layout$COL)
+    # Add column strips to the panels on the first row
+    strip_layout_col <- seq_len(max(layout$COL))
     strip_layout_row <- rep(1L, length(strip_layout_col))
     strip_name <- sprintf("strip-t-%d", strip_layout_col)
 

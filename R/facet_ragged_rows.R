@@ -80,8 +80,8 @@ FacetRaggedRows <- ggproto(
     strip_data_rows <- vctrs::vec_unique(layout[names(params$rows)])
     strips <- render_strips(NULL, strip_data_rows, params$labeller, theme)
 
-    # For each row, find the farthest out column to add strips to
-    strip_layout_row <- tapply(layout$ROW, layout$ROW, head, 1)
+    # Add row strips to the panels in the farthest out columns on each row
+    strip_layout_row <- seq_len(max(layout$ROW))
     strip_layout_col <- tapply(layout$COL, layout$ROW, max)
     strip_name <- sprintf("strip-r-%d", strip_layout_row)
 

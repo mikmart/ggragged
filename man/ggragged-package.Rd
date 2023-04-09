@@ -4,12 +4,12 @@
 \name{ggragged-package}
 \alias{ggragged}
 \alias{ggragged-package}
-\title{ggragged: What the Package Does (One Line, Title Case)}
+\title{ggragged: Ragged Grids for ggplot2}
 \description{
-What the package does (one paragraph).
+Faceting functions for defining panel layouts arranged in a grid with ragged edges in ggplot2. These can be useful, for example, to represent nested or partially crossed relationships between faceting variables.
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Mikko Marttila \email{mikkmart@pm.me}
 
 }
 \keyword{internal}

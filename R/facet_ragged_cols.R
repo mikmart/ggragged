@@ -19,7 +19,6 @@ facet_ragged_cols <- function(rows, cols, ..., scales = "fixed", labeller = "lab
   )
 }
 
-#' @export
 FacetRaggedCols <- ggproto(
   "FacetRaggedCols",
   FacetWrap,

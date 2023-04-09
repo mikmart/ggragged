@@ -8,6 +8,7 @@
 #'
 #' @param rows,cols A set of variables or expressions quoted by [ggplot2::vars()],
 #'   the combinations of which define panels to be included in the grid.
+#' @param ... Arguments reserved for future use.
 #' @param scales Should all panels share the same scales (`"fixed"`),
 #'   x-axes vary (`"free_x"`), y-axes vary (`"free_y"`), or both (`"free"`)?
 #'   Panels within groups always share the scale along the grouping dimension.

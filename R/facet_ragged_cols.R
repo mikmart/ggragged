@@ -1,7 +1,8 @@
 #' @include facet_ragged_rows.R
 #' @rdname facet_ragged
 #' @export
-facet_ragged_cols <- function(rows, cols, scales = "fixed", labeller = "label_value") {
+facet_ragged_cols <- function(rows, cols, ..., scales = "fixed", labeller = "label_value") {
+  rlang::check_dots_empty()
   scales <- rlang::arg_match(scales, c("fixed", "free_x", "free_y", "free"))
   ggproto(
     NULL,

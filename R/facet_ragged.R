@@ -48,3 +48,15 @@
 #' )
 #' @name facet_ragged
 NULL
+
+FacetRagged <- ggproto("FacetRagged", Facet,
+  shrink = TRUE,
+
+  map_data = function(data, layout, params) {
+    FacetGrid$map_data(data, layout, params)
+  },
+
+  vars = function(self) {
+    names(c(self$params$rows, self$params$cols))
+  },
+)

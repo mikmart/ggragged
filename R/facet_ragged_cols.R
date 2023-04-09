@@ -19,12 +19,9 @@ facet_ragged_cols <- function(rows, cols, ..., scales = "fixed", labeller = "lab
   )
 }
 
-FacetRaggedCols <- ggproto(
-  "FacetRaggedCols",
-  FacetWrap,
-
+FacetRaggedCols <- ggproto("FacetRaggedCols", FacetRagged,
   setup_params = function(data, params) {
-    params <- FacetWrap$setup_params(data, params)
+    params <- FacetRagged$setup_params(data, params)
 
     # Add parameters expected by facet_wrap
     params$strip.position <- "right"
@@ -66,10 +63,6 @@ FacetRaggedCols <- ggproto(
     cbind(layout, panels)
   },
 
-  map_data = function(data, layout, params) {
-    FacetGrid$map_data(data, layout, params)
-  },
-
   draw_panels = function(panels, layout, x_scales, y_scales, ranges, coord, data, theme, params) {
     panel_table <- local({
       params$free$x <- FALSE # Always suppress intermediate axes in columns
@@ -96,9 +89,5 @@ FacetRaggedCols <- ggproto(
     panel_table <- gtable_add_grob(panel_table, strips$x$top, strip_pos_t, strip_pos_l, clip = "on", name = strip_name, z = 2)
 
     panel_table
-  },
-
-  vars = function(self) {
-    names(c(self$params$rows, self$params$cols))
   },
 )

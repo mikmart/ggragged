@@ -17,18 +17,34 @@
 #' @examples
 #' p <- ggplot(Indometh, aes(time, conc)) + geom_line()
 #'
-#' # Ragged grid with cohorts on separate rows
+#' # Panels for each subject, with cohorts on separate rows
 #' p + facet_ragged_rows(
 #'   vars(Cohort = 1 + Subject %in% 3:6),
 #'   vars(Subject = as.character(Subject)),
 #'   labeller = label_both
 #' )
 #'
-#' # Ragged grid with cohorts in separate columns
+#' # Independent y-axes between rows of cohorts
+#' p + facet_ragged_rows(
+#'   vars(Cohort = 1 + Subject %in% 3:6),
+#'   vars(Subject = as.character(Subject)),
+#'   labeller = label_both,
+#'   scales = "free_y"
+#' )
+#'
+#' # Panels for each subject, with cohorts in separate columns
 #' p + facet_ragged_cols(
 #'   vars(Subject = as.character(Subject)),
 #'   vars(Cohort = 1 + Subject %in% 3:6),
 #'   labeller = label_both
+#' )
+#'
+#' # Independent y-axes for all subjects
+#' p + facet_ragged_cols(
+#'   vars(Subject = as.character(Subject)),
+#'   vars(Cohort = 1 + Subject %in% 3:6),
+#'   labeller = label_both,
+#'   scales = "free_y"
 #' )
 #' @name facet_ragged
 NULL

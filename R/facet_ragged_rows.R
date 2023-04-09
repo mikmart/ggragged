@@ -1,10 +1,13 @@
 #' Lay out panels in a grid of ragged rows
 #'
 #' @param rows,cols A set of variables or expressions quoted by [ggplot2::vars()],
-#'   the combinations of which define panels to be inlcuded in the grid. Panels
-#'   for `cols` are wrapped independently within `rows` to form a ragged grid.
+#'   the combinations of which define panels to be included in the grid.
+#' @param scales Should all panels share the same scales (`"fixed"`),
+#'   x-axes vary between panels (`"free_x"`),
+#'   y-axes vary between rows (`"free_y"`), or both (`"free"`)?
 #' @inheritParams ggplot2::facet_wrap
 #'
+#' @family ragged grids
 #' @examples
 #' p <- ggplot(Indometh, aes(time, conc)) + geom_line()
 #'
@@ -15,13 +18,18 @@
 #'   labeller = label_both
 #' )
 #' @export
-facet_ragged_rows <- function(rows, cols, labeller = "label_value") {
+facet_ragged_rows <- function(rows, cols, scales = "fixed", labeller = "label_value") {
+  scales <- rlang::arg_match(scales, c("fixed", "free_x", "free_y", "free"))
   ggproto(
     NULL,
     FacetRaggedRows,
     params = list(
       rows = rlang::quos_auto_name(rows),
       cols = rlang::quos_auto_name(cols),
+      free = list(
+        x = scales %in% c("free_x", "free"),
+        y = scales %in% c("free_y", "free")
+      ),
       labeller = labeller
     )
   )
@@ -36,7 +44,6 @@ FacetRaggedRows <- ggproto(
     params <- FacetWrap$setup_params(data, params)
 
     # Add parameters expected by facet_wrap
-    params$free <- list(x = FALSE, y = FALSE)
     params$strip.position <- "top"
     params$facets <- params$cols
 
@@ -68,8 +75,9 @@ FacetRaggedRows <- ggproto(
       PANEL = panel_id,
       ROW = i,
       COL = j,
-      SCALE_X = 1L,
-      SCALE_Y = 1L
+      SCALE_X = if (params$free$x) panel_id else 1L,
+      SCALE_Y = if (params$free$y) cumsum(n)[i] else 1L
+      # facet_wrap assumes SCALE_Y is an index into panels
     )
 
     cbind(layout, panels)
@@ -80,7 +88,10 @@ FacetRaggedRows <- ggproto(
   },
 
   draw_panels = function(panels, layout, x_scales, y_scales, ranges, coord, data, theme, params) {
-    panel_table <- FacetWrap$draw_panels(panels, layout, x_scales, y_scales, ranges, coord, data, theme, params)
+    panel_table <- local({
+      params$free$y <- FALSE # Always suppress intermediate axes on rows
+      FacetWrap$draw_panels(panels, layout, x_scales, y_scales, ranges, coord, data, theme, params)
+    })
 
     # Render strips for rows. facet_wrap doesn't know about these.
     strip_data_rows <- vctrs::vec_unique(layout[names(params$rows)])

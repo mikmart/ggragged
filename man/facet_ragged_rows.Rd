@@ -4,12 +4,15 @@
 \alias{facet_ragged_rows}
 \title{Lay out panels in a grid of ragged rows}
 \usage{
-facet_ragged_rows(rows, cols, labeller = "label_value")
+facet_ragged_rows(rows, cols, scales = "fixed", labeller = "label_value")
 }
 \arguments{
 \item{rows, cols}{A set of variables or expressions quoted by \code{\link[ggplot2:vars]{ggplot2::vars()}},
-the combinations of which define panels to be inlcuded in the grid. Panels
-for \code{cols} are wrapped independently within \code{rows} to form a ragged grid.}
+the combinations of which define panels to be included in the grid.}
+
+\item{scales}{Should all panels share the same scales (\code{"fixed"}),
+x-axes vary between panels (\code{"free_x"}),
+y-axes vary between rows (\code{"free_y"}), or both (\code{"free"})?}
 
 \item{labeller}{A function that takes one data frame of labels and
 returns a list or data frame of character vectors. Each input
@@ -35,3 +38,8 @@ p + facet_ragged_rows(
   labeller = label_both
 )
 }
+\seealso{
+Other ragged grids: 
+\code{\link{facet_ragged_cols}()}
+}
+\concept{ragged grids}

@@ -94,7 +94,7 @@ FacetRaggedRows <- ggproto(
     # Justify strips to start at the right edge of the panels
     strips$y$right <- lapply(strips$y$right, function(strip) {
       # Strips can be zeroGrobs if e.g. text is element_blank()
-      if (!inherits(strip, "gtable")) {
+      if (!is.gtable(strip)) {
         return(strip)
       }
       gtable_add_cols(strip, gtable_width(strip), 0)

@@ -8,7 +8,7 @@
 
 ggragged extends the faceting system in
 [ggplot2](https://ggplot2.tidyverse.org/) to ragged grids – a hybrid
-between `facet_wrap()` and `facet_grid()`.
+layout between `facet_wrap()` and `facet_grid()`.
 
 - `facet_ragged_rows()` groups panels into rows of (potentially) varying
   lengths.
@@ -25,8 +25,8 @@ remotes::install_github("mikmart/ggragged")
 
 ## Example
 
-Ragged grids can be useful, for example, to clearly separate nested
-hierarchies in the panel layout:
+Ragged grids can be used to clearly separate nested hierarchies in the
+panel layout:
 
 ``` r
 library(ggplot2)

@@ -22,5 +22,6 @@ Collate:
     'facet_ragged_rows.R'
     'facet_ragged_cols.R'
     'ggragged-package.R'
-URL: https://github.com/mikmart/ggragged
+URL: https://github.com/mikmart/ggragged,
+    https://mikmart.github.io/ggragged/
 BugReports: https://github.com/mikmart/ggragged/issues

@@ -8,6 +8,15 @@
 \description{
 Faceting functions for defining panel layouts arranged in a grid with ragged edges in ggplot2. These can be useful, for example, to represent nested or partially crossed relationships between faceting variables.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mikmart/ggragged}
+  \item \url{https://mikmart.github.io/ggragged/}
+  \item Report bugs at \url{https://github.com/mikmart/ggragged/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Mikko Marttila \email{mikkmart@pm.me}
 

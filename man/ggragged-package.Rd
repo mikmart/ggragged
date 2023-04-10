@@ -6,6 +6,8 @@
 \alias{ggragged-package}
 \title{ggragged: Ragged Grids for ggplot2}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Faceting functions for defining panel layouts arranged in a grid with ragged edges in ggplot2. These can be useful, for example, to represent nested or partially crossed relationships between faceting variables.
 }
 \seealso{

@@ -1,9 +1,12 @@
 #' @include facet_ragged_rows.R
 #' @rdname facet_ragged
 #' @export
-facet_ragged_cols <- function(rows, cols, ..., scales = "fixed", labeller = "label_value") {
+facet_ragged_cols <- function(rows, cols, ..., scales = "fixed", switch = NULL, labeller = "label_value") {
   rlang::check_dots_empty()
-  scales <- rlang::arg_match(scales, c("fixed", "free_x", "free_y", "free"))
+
+  scales <- rlang::arg_match0(scales, c("fixed", "free_x", "free_y", "free"))
+  switch <- if (!is.null(switch)) rlang::arg_match0(switch, c("x", "y", "both")) else "none"
+
   ggproto(
     NULL,
     FacetRaggedCols,
@@ -13,6 +16,10 @@ facet_ragged_cols <- function(rows, cols, ..., scales = "fixed", labeller = "lab
       free = list(
         x = scales %in% c("free_x", "free"),
         y = scales %in% c("free_y", "free")
+      ),
+      switch = list(
+        x = switch %in% c("x", "both"),
+        y = switch %in% c("y", "both")
       ),
       labeller = labeller
     )
@@ -24,7 +31,7 @@ FacetRaggedCols <- ggproto("FacetRaggedCols", FacetRagged,
     params <- FacetRagged$setup_params(data, params)
 
     # Add parameters expected by facet_wrap
-    params$strip.position <- "right"
+    params$strip.position <- if (params$switch$y) "left" else "right"
     params$facets <- params$rows
 
     params
@@ -73,20 +80,34 @@ FacetRaggedCols <- ggproto("FacetRaggedCols", FacetRagged,
     strip_data_cols <- vctrs::vec_unique(layout[names(params$cols)])
     strips <- render_strips(strip_data_cols, NULL, params$labeller, theme)
 
-    # Add column strips to the panels on the first row
-    strip_layout_col <- seq_len(max(layout$COL))
-    strip_layout_row <- rep(1L, length(strip_layout_col))
-    strip_name <- sprintf("strip-t-%d", strip_layout_col)
+    # Justify strips to start at the bottom edge of the panels
+    strips$x$bottom <- lapply(strips$x$bottom, function(strip) {
+      # Strips can be zeroGrobs if e.g. text is element_blank()
+      if (!is.gtable(strip) || !params$switch$x) {
+        return(strip)
+      }
+      gtable_add_rows(strip, gtable_height(strip), 0)
+    })
 
-    # Map strip position in layout to position in gtable
     panel_pos_rows <- panel_rows(panel_table)
     panel_pos_cols <- panel_cols(panel_table)
-    strip_pos_t <- panel_pos_rows$t[strip_layout_row]
+
+    strip_layout_col <- seq_len(max(layout$COL))
     strip_pos_l <- panel_pos_cols$r[strip_layout_col]
 
-    # Add space in the margin for farthest out strips, and then strip grobs
-    panel_table <- gtable_add_rows(panel_table, max_height(strips$x$top), min(strip_pos_t) - 1)
-    panel_table <- gtable_add_grob(panel_table, strips$x$top, strip_pos_t, strip_pos_l, clip = "on", name = strip_name, z = 2)
+    if (params$switch$x) {
+      strip_name <- sprintf("strip-b-%d", strip_layout_col)
+      strip_layout_row <- tapply(layout$ROW, layout$COL, max)
+      strip_pos_t <- panel_pos_rows$b[strip_layout_row] + 1L
+      panel_table <- gtable_add_rows(panel_table, max_height(strips$x$bottom) / 2)
+      panel_table <- gtable_add_grob(panel_table, strips$x$bottom, strip_pos_t, strip_pos_l, clip = "off", name = strip_name, z = 2)
+    } else {
+      strip_name <- sprintf("strip-t-%d", strip_layout_col)
+      strip_layout_row <- rep(1L, length(strip_layout_col))
+      strip_pos_t <- panel_pos_rows$t[strip_layout_row]
+      panel_table <- gtable_add_rows(panel_table, max_height(strips$x$top), min(strip_pos_t) - 1L)
+      panel_table <- gtable_add_grob(panel_table, strips$x$top, strip_pos_t, strip_pos_l, clip = "on", name = strip_name, z = 2)
+    }
 
     panel_table
   },

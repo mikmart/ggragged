@@ -7,9 +7,23 @@
 \alias{facet_ragged_cols}
 \title{Lay out panels in a ragged grid}
 \usage{
-facet_ragged_rows(rows, cols, ..., scales = "fixed", labeller = "label_value")
+facet_ragged_rows(
+  rows,
+  cols,
+  ...,
+  scales = "fixed",
+  switch = NULL,
+  labeller = "label_value"
+)
 
-facet_ragged_cols(rows, cols, ..., scales = "fixed", labeller = "label_value")
+facet_ragged_cols(
+  rows,
+  cols,
+  ...,
+  scales = "fixed",
+  switch = NULL,
+  labeller = "label_value"
+)
 }
 \arguments{
 \item{rows, cols}{A set of variables or expressions quoted by \code{\link[ggplot2:vars]{ggplot2::vars()}},
@@ -20,6 +34,10 @@ the combinations of which define panels to be included in the grid.}
 \item{scales}{Should all panels share the same scales (\code{"fixed"}),
 x-axes vary (\code{"free_x"}), y-axes vary (\code{"free_y"}), or both (\code{"free"})?
 Panels within groups always share the scale along the grouping dimension.}
+
+\item{switch}{By default, facet labels are positioned to the top and right
+of the panels. Use \code{"x"} to switch the top strip to the bottom,
+use \code{"y"} to switch the right strip to the left, or \code{"both"}.}
 
 \item{labeller}{A function that takes one data frame of labels and
 returns a list or data frame of character vectors. Each input

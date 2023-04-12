@@ -12,6 +12,9 @@
 #' @param scales Should all panels share the same scales (`"fixed"`),
 #'   x-axes vary (`"free_x"`), y-axes vary (`"free_y"`), or both (`"free"`)?
 #'   Panels within groups always share the scale along the grouping dimension.
+#' @param switch By default, facet labels are positioned to the top and right
+#'   of the panels. Use `"x"` to switch the top strip to the bottom,
+#'   use `"y"` to switch the right strip to the left, or `"both"`.
 #' @inheritParams ggplot2::facet_wrap
 #'
 #' @examples

@@ -60,9 +60,23 @@ nested or partially crossed relationships between faceting variables.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">facet_ragged_rows</span><span class="op">(</span><span class="va">rows</span>, <span class="va">cols</span>, <span class="va">...</span>, scales <span class="op">=</span> <span class="st">"fixed"</span>, labeller <span class="op">=</span> <span class="st">"label_value"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">facet_ragged_rows</span><span class="op">(</span></span>
+<span>  <span class="va">rows</span>,</span>
+<span>  <span class="va">cols</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  scales <span class="op">=</span> <span class="st">"fixed"</span>,</span>
+<span>  switch <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  labeller <span class="op">=</span> <span class="st">"label_value"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">facet_ragged_cols</span><span class="op">(</span><span class="va">rows</span>, <span class="va">cols</span>, <span class="va">...</span>, scales <span class="op">=</span> <span class="st">"fixed"</span>, labeller <span class="op">=</span> <span class="st">"label_value"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">facet_ragged_cols</span><span class="op">(</span></span>
+<span>  <span class="va">rows</span>,</span>
+<span>  <span class="va">cols</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  scales <span class="op">=</span> <span class="st">"fixed"</span>,</span>
+<span>  switch <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  labeller <span class="op">=</span> <span class="st">"label_value"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -80,6 +94,12 @@ the combinations of which define panels to be included in the grid.</p></dd>
 <dd><p>Should all panels share the same scales (<code>"fixed"</code>),
 x-axes vary (<code>"free_x"</code>), y-axes vary (<code>"free_y"</code>), or both (<code>"free"</code>)?
 Panels within groups always share the scale along the grouping dimension.</p></dd>
+
+
+<dt>switch</dt>
+<dd><p>By default, facet labels are positioned to the top and right
+of the panels. Use <code>"x"</code> to switch the top strip to the bottom,
+use <code>"y"</code> to switch the right strip to the left, or <code>"both"</code>.</p></dd>
 
 
 <dt>labeller</dt>

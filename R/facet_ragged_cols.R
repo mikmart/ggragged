@@ -80,15 +80,6 @@ FacetRaggedCols <- ggproto("FacetRaggedCols", FacetRagged,
     strip_data_cols <- vctrs::vec_unique(layout[names(params$cols)])
     strips <- render_strips(strip_data_cols, NULL, params$labeller, theme)
 
-    # Justify strips to start at the bottom edge of the panels
-    strips$x$bottom <- lapply(strips$x$bottom, function(strip) {
-      # Strips can be zeroGrobs if e.g. text is element_blank()
-      if (!is.gtable(strip) || !params$switch$x) {
-        return(strip)
-      }
-      gtable_add_rows(strip, gtable_height(strip), 0)
-    })
-
     panel_pos_rows <- panel_rows(panel_table)
     panel_pos_cols <- panel_cols(panel_table)
 
@@ -96,16 +87,36 @@ FacetRaggedCols <- ggproto("FacetRaggedCols", FacetRagged,
     strip_pos_l <- panel_pos_cols$r[strip_layout_col]
 
     if (params$switch$x) {
+      # Add strips to the bottom of the panels on the last row in each column
       strip_name <- sprintf("strip-b-%d", strip_layout_col)
       strip_layout_row <- tapply(layout$ROW, layout$COL, max)
       strip_pos_t <- panel_pos_rows$b[strip_layout_row] + 1L
-      panel_table <- gtable_add_rows(panel_table, max_height(strips$x$bottom) / 2)
+      strip_height <- max_height(strips$x$bottom)
+
+      # Pad strips to start at the edge of the panel
+      on_last_row <- strip_layout_row == max(strip_layout_row)
+      strips$x$bottom <- iapply(strips$x$bottom, !on_last_row, function(strip) {
+        if (!is.gtable(strip)) strip else gtable_add_rows(strip, strip_height, 0L)
+      })
+
+      # Shift axes to start at the edge of the strip
+      row <- strip_layout_row[!on_last_row]
+      col <- strip_layout_col[!on_last_row]
+      axis_name <- sprintf("axis-b-%d-%d", col, row)
+      axes <- gtable_get_grob(panel_table, axis_name)
+      axes <- lapply(axes, grob_shift_viewport, y = -strip_height)
+      panel_table <- gtable_set_grob(panel_table, axis_name, axes)
+
+      panel_table <- gtable_add_rows(panel_table, strip_height, max(strip_pos_t) - 1L)
       panel_table <- gtable_add_grob(panel_table, strips$x$bottom, strip_pos_t, strip_pos_l, clip = "off", name = strip_name, z = 2)
     } else {
+      # Add strips to the top of the panels on the first row
       strip_name <- sprintf("strip-t-%d", strip_layout_col)
       strip_layout_row <- rep(1L, length(strip_layout_col))
       strip_pos_t <- panel_pos_rows$t[strip_layout_row]
-      panel_table <- gtable_add_rows(panel_table, max_height(strips$x$top), min(strip_pos_t) - 1L)
+      strip_height <- max_height(strips$x$top)
+
+      panel_table <- gtable_add_rows(panel_table, strip_height, min(strip_pos_t) - 1L)
       panel_table <- gtable_add_grob(panel_table, strips$x$top, strip_pos_t, strip_pos_l, clip = "on", name = strip_name, z = 2)
     }
 

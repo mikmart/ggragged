@@ -80,15 +80,6 @@ FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
     strip_data_rows <- vctrs::vec_unique(layout[names(params$rows)])
     strips <- render_strips(NULL, strip_data_rows, params$labeller, theme)
 
-    # Justify strips to start at the right edge of the panels
-    strips$y$right <- lapply(strips$y$right, function(strip) {
-      # Strips can be zeroGrobs if e.g. text is element_blank()
-      if (!is.gtable(strip) || params$switch$y) {
-        return(strip)
-      }
-      gtable_add_cols(strip, gtable_width(strip), 0)
-    })
-
     panel_pos_rows <- panel_rows(panel_table)
     panel_pos_cols <- panel_cols(panel_table)
 
@@ -96,16 +87,36 @@ FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
     strip_pos_t <- panel_pos_rows$t[strip_layout_row]
 
     if (params$switch$y) {
+      # Add strips to the left of the panels in the first column
       strip_name <- sprintf("strip-l-%d", strip_layout_row)
       strip_layout_col <- rep(1L, length(strip_layout_row))
       strip_pos_l <- panel_pos_cols$l[strip_layout_col]
-      panel_table <- gtable_add_cols(panel_table, max_width(strips$y$left), min(strip_pos_l) - 1L)
+      strip_width <- max_width(strips$y$left)
+
+      panel_table <- gtable_add_cols(panel_table, strip_width, min(strip_pos_l) - 1L)
       panel_table <- gtable_add_grob(panel_table, strips$y$left, strip_pos_t, strip_pos_l, clip = "on", name = strip_name, z = 2)
     } else {
+      # Add strips to the right of the panels in the last column on each row
       strip_name <- sprintf("strip-r-%d", strip_layout_row)
       strip_layout_col <- tapply(layout$COL, layout$ROW, max)
       strip_pos_l <- panel_pos_cols$r[strip_layout_col] + 1L
-      panel_table <- gtable_add_cols(panel_table, max_width(strips$y$right) / 2)
+      strip_width <- max_width(strips$y$right)
+
+      # Pad strips to start at the edge of the panel
+      in_last_col <- strip_layout_col == max(strip_layout_col)
+      strips$y$right <- iapply(strips$y$right, !in_last_col, function(strip) {
+        if (!is.gtable(strip)) strip else gtable_add_cols(strip, strip_width, 0L)
+      })
+
+      # Shift axes to start at the edge of the strip
+      row <- strip_layout_row[!in_last_col]
+      col <- strip_layout_col[!in_last_col]
+      axis_name <- sprintf("axis-r-%d-%d", row, col)
+      axes <- gtable_get_grob(panel_table, axis_name)
+      axes <- lapply(axes, grob_shift_viewport, x = strip_width)
+      panel_table <- gtable_set_grob(panel_table, axis_name, axes)
+
+      panel_table <- gtable_add_cols(panel_table, strip_width, max(strip_pos_l) - 1L)
       panel_table <- gtable_add_grob(panel_table, strips$y$right, strip_pos_t, strip_pos_l, clip = "off", name = strip_name, z = 2)
     }
 

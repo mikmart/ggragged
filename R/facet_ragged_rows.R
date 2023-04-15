@@ -96,12 +96,14 @@ FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
     strip_pos_t <- panel_pos_rows$t[strip_layout_row]
 
     if (params$switch$y) {
+      # Add strips to the left of the panels in the first column
       strip_name <- sprintf("strip-l-%d", strip_layout_row)
       strip_layout_col <- rep(1L, length(strip_layout_row))
       strip_pos_l <- panel_pos_cols$l[strip_layout_col]
       panel_table <- gtable_add_cols(panel_table, max_width(strips$y$left), min(strip_pos_l) - 1L)
       panel_table <- gtable_add_grob(panel_table, strips$y$left, strip_pos_t, strip_pos_l, clip = "on", name = strip_name, z = 2)
     } else {
+      # Add strips to the right of the panels in the last column on each row
       strip_name <- sprintf("strip-r-%d", strip_layout_row)
       strip_layout_col <- tapply(layout$COL, layout$ROW, max)
       strip_pos_l <- panel_pos_cols$r[strip_layout_col] + 1L

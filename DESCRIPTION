@@ -28,4 +28,7 @@ Collate:
     'facet_ragged_rows.R'
     'facet_ragged_cols.R'
     'ggragged-package.R'
+    'grid.R'
+    'gtable.R'
+    'utils.R'
 Config/testthat/edition: 3

@@ -49,23 +49,7 @@ FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
       drop = TRUE
     )
     panels <- vctrs::vec_sort(panels)
-    panel_id <- seq_len(nrow(panels))
-
-    # Map variables to layout
-    g <- panels[names(rows)]
-    r <- vctrs::vec_group_rle(g)
-    n <- vctrs::field(r, "length")
-    i <- rep(seq_along(n), n)
-    j <- sequence(n)
-
-    layout <- data.frame(
-      PANEL = panel_id,
-      ROW = i,
-      COL = j,
-      SCALE_X = if (params$free$x) panel_id else 1L,
-      SCALE_Y = if (params$free$y) cumsum(n)[i] else 1L
-      # facet_wrap assumes SCALE_Y is an index into panels
-    )
+    layout <- layout_ragged_rows(panels[names(rows)], params$free)
 
     cbind(layout, panels)
   },

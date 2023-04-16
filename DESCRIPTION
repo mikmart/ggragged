@@ -32,4 +32,5 @@ Collate:
     'ggragged-package.R'
     'grid.R'
     'gtable.R'
+    'layout.R'
     'utils.R'

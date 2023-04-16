@@ -37,7 +37,7 @@ FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
     params$free$y <- FALSE # Always suppress intermediate axes on rows
     panel_table <- FacetWrap$draw_panels(panels, layout, x_scales, y_scales, ranges, coord, data, theme, params)
 
-    # Render rows strips that FacetWrap didn't know about
+    # Render row strips that FacetWrap didn't know about
     strip_data <- vctrs::vec_unique(layout[names(params$rows)])
     strips <- render_strips(NULL, strip_data, params$labeller, theme)
 

@@ -63,3 +63,28 @@ FacetRagged <- ggproto("FacetRagged", Facet,
     names(c(self$params$rows, self$params$cols))
   },
 )
+
+new_facet_ragged <- function(parent, rows, cols, ..., scales, switch, labeller) {
+  rlang::check_dots_empty()
+
+  scales <- rlang::arg_match0(scales, c("fixed", "free_x", "free_y", "free"))
+  switch <- if (!is.null(switch)) rlang::arg_match0(switch, c("x", "y", "both")) else "none"
+
+  ggproto(
+    NULL,
+    parent,
+    params = list(
+      rows = rlang::quos_auto_name(rows),
+      cols = rlang::quos_auto_name(cols),
+      free = list(
+        x = scales %in% c("free_x", "free"),
+        y = scales %in% c("free_y", "free")
+      ),
+      switch = list(
+        x = switch %in% c("x", "both"),
+        y = switch %in% c("y", "both")
+      ),
+      labeller = labeller
+    )
+  )
+}

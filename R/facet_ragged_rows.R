@@ -2,35 +2,14 @@
 #' @rdname facet_ragged
 #' @export
 facet_ragged_rows <- function(rows, cols, ..., scales = "fixed", switch = NULL, labeller = "label_value") {
-  rlang::check_dots_empty()
-
-  scales <- rlang::arg_match0(scales, c("fixed", "free_x", "free_y", "free"))
-  switch <- if (!is.null(switch)) rlang::arg_match0(switch, c("x", "y", "both")) else "none"
-
-  ggproto(
-    NULL,
-    FacetRaggedRows,
-    params = list(
-      rows = rlang::quos_auto_name(rows),
-      cols = rlang::quos_auto_name(cols),
-      free = list(
-        x = scales %in% c("free_x", "free"),
-        y = scales %in% c("free_y", "free")
-      ),
-      switch = list(
-        x = switch %in% c("x", "both"),
-        y = switch %in% c("y", "both")
-      ),
-      labeller = labeller
-    )
-  )
+  new_facet_ragged(FacetRaggedRows, rows, cols, ..., scales = scales, switch = switch, labeller = labeller)
 }
 
 FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
   setup_params = function(data, params) {
     params <- FacetRagged$setup_params(data, params)
 
-    # Add parameters expected by facet_wrap
+    # Add parameters expected by FacetWrap
     params$strip.position <- if (params$switch$x) "bottom" else "top"
     params$facets <- params$cols
 
@@ -55,14 +34,12 @@ FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
   },
 
   draw_panels = function(panels, layout, x_scales, y_scales, ranges, coord, data, theme, params) {
-    panel_table <- local({
-      params$free$y <- FALSE # Always suppress intermediate axes on rows
-      FacetWrap$draw_panels(panels, layout, x_scales, y_scales, ranges, coord, data, theme, params)
-    })
+    params$free$y <- FALSE # Always suppress intermediate axes on rows
+    panel_table <- FacetWrap$draw_panels(panels, layout, x_scales, y_scales, ranges, coord, data, theme, params)
 
-    # Render strips for rows. facet_wrap doesn't know about these.
-    strip_data_rows <- vctrs::vec_unique(layout[names(params$rows)])
-    strips <- render_strips(NULL, strip_data_rows, params$labeller, theme)
+    # Render rows strips that FacetWrap didn't know about
+    strip_data <- vctrs::vec_unique(layout[names(params$rows)])
+    strips <- render_strips(NULL, strip_data, params$labeller, theme)
 
     panel_pos_rows <- panel_rows(panel_table)
     panel_pos_cols <- panel_cols(panel_table)

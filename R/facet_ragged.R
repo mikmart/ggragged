@@ -17,6 +17,8 @@
 #'   use `"y"` to switch the right strip to the left, or `"both"`.
 #' @inheritParams ggplot2::facet_wrap
 #'
+#' @returns A `Facet` that can be added to a `ggplot`.
+#'
 #' @examples
 #' p <- ggplot(Indometh, aes(time, conc)) + geom_line()
 #'

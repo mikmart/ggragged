@@ -4,11 +4,11 @@
 \name{ggragged-package}
 \alias{ggragged}
 \alias{ggragged-package}
-\title{ggragged: Ragged Grids for ggplot2}
+\title{ggragged: Ragged Grids for 'ggplot2'}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Faceting functions for defining panel layouts arranged in a grid with ragged edges in ggplot2. These can be useful, for example, to represent nested or partially crossed relationships between faceting variables.
+'ggplot2' facets for panel layouts arranged in a grid with ragged edges. facet_ragged_rows() groups panels in rows of (potentially) varying lengths, facet_ragged_cols() does the same for columns. These can be useful, for example, to represent nested or partially crossed relationships between faceting variables.
 }
 \seealso{
 Useful links:
@@ -20,7 +20,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Mikko Marttila \email{mikkmart@pm.me}
+\strong{Maintainer}: Mikko Marttila \email{mikkmart@protonmail.com} [copyright holder]
 
 }
 \keyword{internal}

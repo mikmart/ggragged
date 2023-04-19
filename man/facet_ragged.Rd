@@ -50,6 +50,9 @@ functions for different kind of labels, for example use \code{\link[ggplot2:labe
 formatting facet labels. \code{\link[ggplot2:label_value]{label_value()}} is used by default,
 check it for more details and pointers to other options.}
 }
+\value{
+A \code{Facet} that can be added to a \code{ggplot}.
+}
 \description{
 These facets create layouts in-between \code{\link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}} and
 \code{\link[ggplot2:facet_grid]{ggplot2::facet_grid()}}. Panels are arranged into groups stacked along the

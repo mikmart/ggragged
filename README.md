@@ -10,6 +10,8 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![R-CMD-check](https://github.com/mikmart/ggragged/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mikmart/ggragged/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/mikmart/ggragged/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mikmart/ggragged?branch=main)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ggragged)](https://CRAN.R-project.org/package=ggragged)
 <!-- badges: end -->
 
 ggragged extends the faceting system in

@@ -25,14 +25,15 @@ layout between `facet_wrap()` and `facet_grid()`.
 
 ## Installation
 
-Install the current release from [CRAN](https://cran.r-project.org/):
+Install the current release from
+[CRAN](https://cran.r-project.org/package=ggragged):
 
 ``` r
 install.packages("ggragged")
 ```
 
 Or the development version from
-[GitHub](https://github.com/mikmart/ggragged/):
+[GitHub](https://github.com/mikmart/ggragged):
 
 ``` r
 remotes::install_github("mikmart/ggragged")

@@ -63,7 +63,7 @@ FacetRagged <- ggproto("FacetRagged", Facet,
 
   vars = function(self) {
     names(c(self$params$rows, self$params$cols))
-  },
+  }
 )
 
 new_facet_ragged <- function(parent, rows, cols, ..., scales, switch, labeller) {

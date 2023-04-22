@@ -27,7 +27,6 @@ groups.
 Here we showcase some examples of applying ragged grid layouts.
 
 ```{r setup}
-library(ggplot2)
 library(ggragged)
 ```
 

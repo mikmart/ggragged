@@ -1,8 +1,8 @@
 ---
-title: "ggragged"
+title: "ggragged: Ragged Grids for 'ggplot2'"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ggragged}
+  %\VignetteIndexEntry{ggragged: Ragged Grids for 'ggplot2'}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,17 +17,71 @@ knitr::opts_chunk$set(
 ggragged extends the faceting system in [ggplot2](https://cran.r-project.org/package=ggplot2)
 to ragged grid layouts. In a ragged grid, panels are grouped into either rows or columns.
 Groups can have varying lengths, and panel placement within them is independent of other
-groups. Here we showcase some examples of using ragged grid layouts.
-
-## Imbalanced ragged grids
+groups. Here we showcase some examples of applying ragged grid layouts.
 
 ```{r setup}
+library(ggplot2)
 library(ggragged)
 ```
 
+## Imbalanced ragged grids
+
+The motivation for creating ggragged came in the context of a phase I clinical
+trial---a dose-escalation study that enrolled cohorts of different sizes.
+For visual review of individual subject data, it would have been very useful to have
+cohorts clearly grouped together. The situation called for panels laid out in rows of
+uneven length.
+
+Let's demonstrate with some publicly available data.
+
+There are a number of pharmacokinetic datasets distributed with R. None of them quite
+match the structure for this example, so we first prepare a dataset with
+the required features. Using the built-in `Theoph` dataset as a starting point,
+we assign subjects into 3 imbalanced cohorts and simulate doubling doses between them:
+
+```{r sad-data}
+data(Theoph)
+
+Theoph2 <- transform(Theoph, Cohort = (as.numeric(Subject) - 1) %% 3 + 1)
+Theoph2 <- transform(Theoph2, Subject = (as.numeric(Subject) - 1) %/% 3 + 1)
+Theoph2 <- transform(Theoph2, Subject = sprintf("%d0%d", Cohort, Subject))
+Theoph2 <- transform(Theoph2, conc = conc * 2^(Cohort - 1))
+Theoph2 <- subset(Theoph2, Subject != "204")
+
+with(Theoph2, table(Cohort, Subject))
+```
+
+The standard tool for visualizing individual subject profiles is `facet_wrap()`.
+However, due to the imbalanced group sizes, the result here does not do a great
+job at communicating the cohort structure in the data:
+
+```{r sad-wrap}
+p <- ggplot(Theoph2, aes(Time, conc)) + geom_line()
+p + facet_wrap(vars(Subject, Cohort), labeller = label_both)
+```
+
+With `facet_ragged_rows()`, we can have each cohort distinctively laid out
+in a row of its own:
+
+```{r sad-ragged}
+p + facet_ragged_rows(vars(Cohort), vars(Subject), labeller = label_both)
+```
+
+This plot also clearly shows the general escalation of concentration levels between
+cohorts, as all panels share the same y-axis range. If we instead wanted to focus
+on variation between subjects within cohorts, for example for data review purposes,
+we can set `scales = "free_y"` to let y-axis ranges vary between rows:
+
+```{r sad-ragged-free}
+p + facet_ragged_rows(vars(Cohort), vars(Subject), labeller = label_both, scales = "free_y")
+```
+
+This effect would not be possible with `facet_wrap()`, where we could only have
+axis ranges vary between all panels, or none at all.
+
 ## Balanced ragged grids
 
-Ragged grid layouts can be useful in a balanced group setting, too. They can
+Ragged grid layouts can be useful in a balanced group setting, too. They can still
 clarify the nesting hierarchy between faceting variables in the panel layout.
 Let's look at an example.
 

@@ -21,6 +21,7 @@ Imports:
 Suggests: 
     covr,
     knitr,
+    nlme,
     ragg,
     rmarkdown,
     testthat (>= 3.0.0),

@@ -1,8 +1,8 @@
 ---
-title: "Ragged Grids for 'ggplot2'"
+title: "Ragged grids for ggplot2"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Ragged Grids for 'ggplot2'}
+  %\VignetteIndexEntry{Ragged grids for ggplot2}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -28,7 +28,7 @@ library(ggplot2)
 library(ggragged)
 ```
 
-## Example: Imbalanced grid
+## Example: Imbalanced rows
 
 The motivation for creating ggragged came in the context of a phase I clinical
 trial---a dose-escalation study that enrolled cohorts of different sizes.
@@ -83,7 +83,7 @@ p + facet_ragged_rows(vars(Cohort), vars(Subject), labeller = label_both, scales
 This effect would not be possible with `facet_wrap()`, where we could only have
 axis ranges vary between all panels, or none at all.
 
-## Example: Balanced grid
+## Example: Balanced columns
 
 Ragged grid layouts can be useful in a balanced group setting, too. They can still
 clarify the nesting hierarchy between faceting variables in the panel layout.

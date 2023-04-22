@@ -82,5 +82,5 @@ FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
     }
 
     panel_table
-  },
+  }
 )

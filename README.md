@@ -15,13 +15,12 @@ status](https://www.r-pkg.org/badges/version/ggragged)](https://CRAN.R-project.o
 <!-- badges: end -->
 
 ggragged extends the faceting system in
-[ggplot2](https://ggplot2.tidyverse.org/) to ragged grids – a hybrid
+[ggplot2](https://ggplot2.tidyverse.org/) to ragged grids—a hybrid
 layout between `facet_wrap()` and `facet_grid()`.
 
-- `facet_ragged_rows()` groups panels into rows of (potentially) varying
-  lengths.
-- `facet_ragged_cols()` groups panels into columns of (potentially)
-  varying lengths.
+- `facet_ragged_rows()` groups panels into rows that can vary in length.
+- `facet_ragged_cols()` groups panels into columns that can vary in
+  length.
 
 ## Installation
 

@@ -1,8 +1,8 @@
 ---
-title: "ggragged: Ragged Grids for 'ggplot2'"
+title: "Ragged Grids for 'ggplot2'"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ggragged: Ragged Grids for 'ggplot2'}
+  %\VignetteIndexEntry{Ragged Grids for 'ggplot2'}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,17 +14,21 @@ knitr::opts_chunk$set(
 )
 ```
 
+## Introduction
+
 ggragged extends the faceting system in [ggplot2](https://cran.r-project.org/package=ggplot2)
 to ragged grid layouts. In a ragged grid, panels are grouped into either rows or columns.
 Groups can have varying lengths, and panel placement within them is independent of other
-groups. Here we showcase some examples of applying ragged grid layouts.
+groups.
+
+Here we showcase some examples of applying ragged grid layouts.
 
 ```{r setup}
 library(ggplot2)
 library(ggragged)
 ```
 
-## Imbalanced ragged grids
+## Example: Imbalanced grid
 
 The motivation for creating ggragged came in the context of a phase I clinical
 trial---a dose-escalation study that enrolled cohorts of different sizes.
@@ -61,7 +65,7 @@ p + facet_wrap(vars(Subject, Cohort), labeller = label_both)
 ```
 
 With `facet_ragged_rows()`, we can have each cohort distinctively laid out
-in a row of its own:
+on a row of its own:
 
 ```{r sad-ragged}
 p + facet_ragged_rows(vars(Cohort), vars(Subject), labeller = label_both)
@@ -79,7 +83,7 @@ p + facet_ragged_rows(vars(Cohort), vars(Subject), labeller = label_both, scales
 This effect would not be possible with `facet_wrap()`, where we could only have
 axis ranges vary between all panels, or none at all.
 
-## Balanced ragged grids
+## Example: Balanced grid
 
 Ragged grid layouts can be useful in a balanced group setting, too. They can still
 clarify the nesting hierarchy between faceting variables in the panel layout.
@@ -87,9 +91,8 @@ Let's look at an example.
 
 The `Gun` dataset in package [nlme](https://cran.r-project.org/package=nlme)
 records the results of an experiment on methods for firing naval guns.
-The experiment measured the number of rounds fired per minute, and was conducted
-by 9 teams of gunners of 3 physiques (3 teams each), each team testing the 2
-methods being compared:
+The experiment measured the number of rounds fired per minute.
+9 teams of gunners of 3 physiques (3 teams each) each tested the 2 methods being compared:
 
 ```{r gun-data}
 data(Gun, package = "nlme")
@@ -120,6 +123,6 @@ p + facet_ragged_cols(vars(Team), vars(Physique), labeller = label_both)
 Now each panel is labelled with the original team identifier, the labels clearly
 pointing out the 9 teams. The additional strips break up the rows of panels,
 visually signaling that comparisons across them are not particularly relevant.
-We can also see that the order of the teams in the data (which is not based on
-the alphanumeric team identifier, but rather on the number of rounds fired)
+We can also see that the order of the teams (which in the data is not based on
+the alphanumeric team identifier, but rather on the rate of rounds fired)
 is preserved within physiques.

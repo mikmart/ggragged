@@ -1,0 +1,71 @@
+---
+title: "ggragged"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ggragged}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+ggragged extends the faceting system in [ggplot2](https://cran.r-project.org/package=ggplot2)
+to ragged grid layouts. In a ragged grid, panels are grouped into either rows or columns.
+Groups can have varying lengths, and panel placement within them is independent of other
+groups. Here we showcase some examples of using ragged grid layouts.
+
+## Imbalanced ragged grids
+
+```{r setup}
+library(ggragged)
+```
+
+## Balanced ragged grids
+
+Ragged grid layouts can be useful in a balanced group setting, too. They can
+clarify the nesting hierarchy between faceting variables in the panel layout.
+Let's look at an example.
+
+The `Gun` dataset in package [nlme](https://cran.r-project.org/package=nlme)
+records the results of an experiment on methods for firing naval guns.
+The experiment measured the number of rounds fired per minute, and was conducted
+by 9 teams of gunners of 3 physiques (3 teams each), each team testing the 2
+methods being compared:
+
+```{r gun-data}
+data(Gun, package = "nlme")
+with(Gun, table(Method, Team, Physique))
+```
+
+When visualizing these data, we could facet the plot by team to focus on the
+informative within-team differences in each panel. To also communicate
+the selection of teams by physique, we could show these data in a 3x3
+grid with `facet_grid()`. For that we need a helper variable,
+a team identifier nested within physique:
+
+```{r gun-grid}
+p <- ggplot(Gun, aes(Method, rounds)) + geom_point()
+p + facet_grid(vars(Team = substr(Team, 1, 2)), vars(Physique), labeller = label_both)
+```
+
+There are some issues with this presentation.
+The layout does not clearly communicate the fact that there were 9 separate teams.
+It also visually invites you to compare individual teams that happen to be grouped on
+the same row across physiques, which is not a particularly interesting comparison.
+`facet_ragged_cols()` can help:
+
+```{r gun-ragged}
+p + facet_ragged_cols(vars(Team), vars(Physique), labeller = label_both)
+```
+
+Now each panel is labelled with the original team identifier, the labels clearly
+pointing out the 9 teams. The additional strips break up the rows of panels,
+visually signaling that comparisons across them are not particularly relevant.
+We can also see that the order of the teams in the data (which is not based on
+the alphanumeric team identifier, but rather on the number of rounds fired)
+is preserved within physiques.

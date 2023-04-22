@@ -20,7 +20,9 @@ Imports:
     vctrs
 Suggests: 
     covr,
+    knitr,
     ragg,
+    rmarkdown,
     testthat (>= 3.0.0),
     vdiffr
 Config/testthat/edition: 3
@@ -36,3 +38,4 @@ Collate:
     'gtable.R'
     'layout.R'
     'utils.R'
+VignetteBuilder: knitr

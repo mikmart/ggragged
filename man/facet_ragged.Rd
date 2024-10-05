@@ -12,7 +12,9 @@ facet_ragged_rows(
   cols,
   ...,
   scales = "fixed",
-  switch = NULL,
+  switch = "none",
+  strips = "margins",
+  axes = "margins",
   labeller = "label_value"
 )
 
@@ -21,7 +23,9 @@ facet_ragged_cols(
   cols,
   ...,
   scales = "fixed",
-  switch = NULL,
+  switch = "none",
+  strips = "margins",
+  axes = "margins",
   labeller = "label_value"
 )
 }
@@ -38,6 +42,14 @@ Panels within groups always share the scale along the grouping dimension.}
 \item{switch}{By default, facet labels are positioned to the top and right
 of the panels. Use \code{"x"} to switch the top strip to the bottom,
 use \code{"y"} to switch the right strip to the left, or \code{"both"}.}
+
+\item{strips}{Should strips be drawn only on the outer margins of groups
+(\code{"margins"}) or also between panels (\code{"all"})?}
+
+\item{axes}{Determines which axes will be drawn in case of fixed scales.
+When \code{"margins"} (default), axes will be drawn at the exterior margins.
+\code{"all_x"} and \code{"all_y"} will draw the respective axes at the interior
+panels too, whereas \code{"all"} will draw all axes at all panels.}
 
 \item{labeller}{A function that takes one data frame of labels and
 returns a list or data frame of character vectors. Each input

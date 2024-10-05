@@ -15,6 +15,7 @@ BugReports: https://github.com/mikmart/ggragged/issues
 Depends: 
     ggplot2
 Imports:
+    grid,
     gtable,
     rlang,
     vctrs

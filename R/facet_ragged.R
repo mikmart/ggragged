@@ -171,9 +171,13 @@ set_strip_viewport <- function(strip, side) {
 cull_inner_panel_decorations <- function(table, layout, sides, kind) {
   kind <- rlang::arg_match0(kind, c("axis", "strip"))
   for (side in sides) {
+    # Remove grobs from inner panels
     panels <- panels_with_neighbour(layout, side)
     names <- sprintf("%s-%s-%d", kind, side, panels)
-    table <- gtable_set_grob(table, names, list(zeroGrob()))
+    for (name in names)
+      table <- gtable_set_grob(table, name, zeroGrob())
+
+    # And the space allocated for them
     table <- switch(
       side,
       t = ,
@@ -182,7 +186,12 @@ cull_inner_panel_decorations <- function(table, layout, sides, kind) {
       r = gtable_set_width(table, names, unit(0, "cm")),
       stop("internal error: invalid side: ", side)
     )
-    # TODO: Fix strip and axis overlapping when space was culled.
+
+    # Shift axes at inner margins to start at strip edge. It would be much
+    # cleaner to have the axes attached to the strips, but that doesn't play
+    # nicely with how ggplot2 expects the axes to be present in the gtable.
+    if (kind == "strip")
+      table <- shift_inner_margin_axes(table, layout, side)
   }
   table
 }
@@ -197,4 +206,39 @@ panels_with_neighbour <- function(layout, side) {
     stop("internal error: invalid side: ", side)
   )
   merge(layout[c("ROW", "COL")], neighbour)$PANEL
+}
+
+margin_panels <- function(layout, side) {
+  setdiff(layout$PANEL, panels_with_neighbour(layout, side))
+}
+
+shift_inner_margin_axes <- function(table, layout, side) {
+  for (panel in margin_panels(layout, side)) {
+    if (is_panel_on_outer_margin(layout, panel, side)) next
+    strip_name <- sprintf("strip-%s-%d", side, panel)
+    strip <- gtable_get_grob(table, strip_name)
+    axis_name <- sprintf("axis-%s-%d", side, panel)
+    axis <- gtable_get_grob(table, axis_name)
+    axis <- switch(
+      side,
+      t = grob_shift_viewport(axis, y = +grid::grobHeight(strip)),
+      b = grob_shift_viewport(axis, y = -grid::grobHeight(strip)),
+      l = grob_shift_viewport(axis, x = -grid::grobWidth(strip)),
+      r = grob_shift_viewport(axis, x = +grid::grobWidth(strip)),
+      stop("internal error: invalid side: ", side)
+    )
+    table <- gtable_set_grob(table, axis_name, axis)
+  }
+  table
+}
+
+is_panel_on_outer_margin <- function(layout, panel, side) {
+  switch(
+    side,
+    t = layout[match(panel, layout$PANEL), "ROW"] == min(layout$ROW),
+    b = layout[match(panel, layout$PANEL), "ROW"] == max(layout$ROW),
+    l = layout[match(panel, layout$PANEL), "COL"] == min(layout$COL),
+    r = layout[match(panel, layout$PANEL), "COL"] == max(layout$COL),
+    stop("internal error: invalid side: ", side)
+  )
 }

@@ -5,6 +5,8 @@
   missing" error message) when an older version of ggplot2 was installed.
 * Added new parameters `strips` and `axes` to facets that control whether strips
   and axes respectively are drawn between adjacent panels.
+* Fixed an issue that caused some axes to be rendered incorrectly when using
+  free scales with `coord_flip()` (#2).
 
 # ggragged 0.1.0
 

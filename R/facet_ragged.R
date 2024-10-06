@@ -90,6 +90,34 @@ FacetRagged <- ggproto("FacetRagged", Facet,
     names(c(self$params$rows, self$params$cols))
   },
 
+  draw_panels = function(self, panels, layout, x_scales, y_scales, ranges, coord, data, theme, params) {
+    table <- self$init_gtable(panels, layout, ranges, coord, theme, params)
+    table <- self$attach_axes(table, layout, ranges, coord, theme, params)
+    table <- self$attach_strips(table, layout, theme, params)
+    table
+  },
+
+  init_gtable = function(panels, layout, ranges, coord, theme, params) {
+    if (!coord$is_free() && (params$free$x || params$free$y))
+      stop("Can't use free scales with a fixed coordinate system.")
+    aspect_ratio <- theme$aspect.ratio %||% coord$aspect(ranges[[1]])
+
+    # Create an empty table with dimensions from layout
+    rows_count <- max(layout$ROW)
+    cols_count <- max(layout$COL)
+    widths <- rep(unit(1, "null"), cols_count)
+    heights <- rep(unit(aspect_ratio %||% 1, "null"), rows_count)
+    table <- gtable(widths, heights, respect = !is.null(aspect_ratio))
+
+    # Insert panel grobs according to layout and add spacing
+    panel_name <- sprintf("panel-%d", layout$PANEL)
+    table <- gtable_add_grob(table, panels, layout$ROW, layout$COL, name = panel_name)
+    table <- gtable_add_col_space(table, calc_element("panel.spacing.x", theme))
+    table <- gtable_add_row_space(table, calc_element("panel.spacing.y", theme))
+
+    table
+  },
+
   attach_axes = function(table, layout, ranges, coord, theme, params) {
     axes <- render_axes(ranges, ranges, coord, theme)
     axes <- list(
@@ -101,7 +129,7 @@ FacetRagged <- ggproto("FacetRagged", Facet,
     add_panel_decorations(table, layout, axes, kind = "axis")
   },
 
-  attach_strips = function(table, layout, params, theme) {
+  attach_strips = function(table, layout, theme, params) {
     # Render strips with faceting variable data
     cols_data <- layout[names(params$cols)]
     rows_data <- layout[names(params$rows)]
@@ -113,7 +141,7 @@ FacetRagged <- ggproto("FacetRagged", Facet,
       if (!side %in% params$strip.position)
         strips[[side]][] <- list(zeroGrob())
 
-    # Make strips stick correctly even in zero-sized rows/cols
+    # Make strips stick correctly in zero-sized rows/cols
     for (side in c("top", "bottom", "left", "right"))
       strips[[side]] <- lapply(strips[[side]], set_strip_viewport, side)
 
@@ -157,10 +185,11 @@ add_panel_decorations <- function(table, layout, grobs, kind) {
 set_strip_viewport <- function(strip, side) {
   strip$vp <- switch(
     substr(side, 1, 1),
-    t = grid::viewport(height = grid::grobHeight(strip), y = unit(0, "npc"), just = "bottom"),
-    b = grid::viewport(height = grid::grobHeight(strip), y = unit(1, "npc"), just = "top"),
-    l = grid::viewport(width = grid::grobWidth(strip), x = unit(1, "npc"), just = "right"),
-    r = grid::viewport(width = grid::grobWidth(strip), x = unit(0, "npc"), just = "left"),
+    # TODO: `clip = "off"` not needed in ggplot2 dev version (3.5.1.9000), could be removed in the future.
+    t = grid::viewport(clip = "off", height = grid::grobHeight(strip), y = unit(0, "npc"), just = "bottom"),
+    b = grid::viewport(clip = "off", height = grid::grobHeight(strip), y = unit(1, "npc"), just = "top"),
+    l = grid::viewport(clip = "off", width = grid::grobWidth(strip), x = unit(1, "npc"), just = "right"),
+    r = grid::viewport(clip = "off", width = grid::grobWidth(strip), x = unit(0, "npc"), just = "left"),
     stop("internal error: invalid side: ", side)
   )
   strip

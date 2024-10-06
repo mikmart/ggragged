@@ -54,8 +54,8 @@ FacetRaggedCols <- ggproto("FacetRaggedCols", FacetRagged,
     table
   },
 
-  attach_strips = function(table, layout, params, theme) {
-    table <- FacetRagged$attach_strips(table, layout, params, theme)
+  attach_strips = function(table, layout, theme, params) {
+    table <- FacetRagged$attach_strips(table, layout, theme, params)
 
     if (params$strips == "margins")
       table <- cull_inner_panel_decorations(table, layout, sides = c("t", "b"), kind = "strip")

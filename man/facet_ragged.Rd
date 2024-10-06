@@ -15,6 +15,7 @@ facet_ragged_rows(
   switch = "none",
   strips = "margins",
   axes = "margins",
+  align = "start",
   labeller = "label_value"
 )
 
@@ -26,6 +27,7 @@ facet_ragged_cols(
   switch = "none",
   strips = "margins",
   axes = "margins",
+  align = "start",
   labeller = "label_value"
 )
 }
@@ -52,6 +54,10 @@ suppressed. Use \code{"all"} to always draw both strips.}
 between panels will be suppressed if they are fixed. Use \code{"all_x"} to
 always draw x-axes, \code{"all_y"} to always draw y-axes, or \code{"all"} to always
 draw both axes.}
+
+\item{align}{Determines how panels are positioned within groups. By default
+(\code{"start"}), panels in groups are densely packed from the start. Use
+\code{"end"} to pack panels to the end of the group.}
 
 \item{labeller}{A function that takes one data frame of labels and
 returns a list or data frame of character vectors. Each input

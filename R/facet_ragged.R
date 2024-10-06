@@ -23,6 +23,9 @@
 #'   between panels will be suppressed if they are fixed. Use `"all_x"` to
 #'   always draw x-axes, `"all_y"` to always draw y-axes, or `"all"` to always
 #'   draw both axes.
+#' @param align Determines how panels are positioned within groups. By default
+#'   (`"start"`), panels in groups are densely packed from the start. Use
+#'   `"end"` to pack panels to the end of the group.
 #' @inheritParams ggplot2::facet_wrap
 #'
 #' @returns A `Facet` that can be added to a `ggplot`.
@@ -159,20 +162,20 @@ add_panel_decorations <- function(table, layout, grobs, kind) {
   kind <- rlang::arg_match0(kind, c("axis", "strip"))
 
   # Add rows for horizontal decorations
-  for (t in rev(panel_rows(table)$t)) {
+  for (t in sort(panel_rows(table)$t, decreasing = TRUE)) {
     table <- gtable_add_rows(table, max_height(grobs$t), t - 1)
     table <- gtable_add_rows(table, max_height(grobs$b), t + 1)
   }
 
   # Add columns for vertical decorations
-  for (l in rev(panel_cols(table)$l)) {
+  for (l in sort(panel_cols(table)$l, decreasing = TRUE)) {
     table <- gtable_add_cols(table, max_width(grobs$l), l - 1)
     table <- gtable_add_cols(table, max_width(grobs$r), l + 1)
   }
 
   # Find panel positions after layout changes
-  panel_rows_pos <- panel_rows(table)
-  panel_cols_pos <- panel_cols(table)
+  panel_rows_pos <- vctrs::vec_sort(panel_rows(table))
+  panel_cols_pos <- vctrs::vec_sort(panel_cols(table))
 
   t <- panel_rows_pos$t[layout$ROW] - 1
   b <- panel_rows_pos$b[layout$ROW] + 1

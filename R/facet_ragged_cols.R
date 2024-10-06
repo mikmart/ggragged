@@ -1,7 +1,7 @@
 #' @include facet_ragged_rows.R
 #' @rdname facet_ragged
 #' @export
-facet_ragged_cols <- function(rows, cols, ..., scales = "fixed", switch = "none", strips = "margins", axes = "margins", labeller = "label_value") {
+facet_ragged_cols <- function(rows, cols, ..., scales = "fixed", switch = "none", strips = "margins", axes = "margins", align = "start", labeller = "label_value") {
   rlang::check_dots_empty()
   switch <- switch %||% "none" # Compatibility with old default value NULL
 
@@ -9,6 +9,7 @@ facet_ragged_cols <- function(rows, cols, ..., scales = "fixed", switch = "none"
   switch <- rlang::arg_match0(switch, c("none", "x", "y", "both"))
   strips <- rlang::arg_match0(strips, c("margins", "all"))
   axes <- rlang::arg_match0(axes, c("margins", "all_x", "all_y", "all"))
+  align <- rlang::arg_match0(align, c("start", "end"))
 
   ggproto(
     NULL,
@@ -20,6 +21,7 @@ facet_ragged_cols <- function(rows, cols, ..., scales = "fixed", switch = "none"
       switch = switch,
       strips = strips,
       axes = axes,
+      align = align,
       labeller = labeller
     )
   )
@@ -38,7 +40,7 @@ FacetRaggedCols <- ggproto("FacetRaggedCols", FacetRagged,
       drop = TRUE
     )
     panels <- vctrs::vec_sort(panels)
-    layout <- layout_ragged_cols(panels[names(cols)], params$free)
+    layout <- layout_ragged_cols(panels[names(cols)], params$free, params$align)
 
     cbind(layout, panels)
   },

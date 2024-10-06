@@ -7,16 +7,22 @@
 #' nested or partially crossed relationships between faceting variables.
 #'
 #' @param rows,cols A set of variables or expressions quoted by [ggplot2::vars()],
-#'   the combinations of which define panels to be included in the grid.
+#'   the combinations of which define the panels to be included in the layout.
 #' @param ... Arguments reserved for future use.
-#' @param scales Should all panels share the same scales (`"fixed"`),
-#'   x-axes vary (`"free_x"`), y-axes vary (`"free_y"`), or both (`"free"`)?
-#'   Panels within groups always share the scale along the grouping dimension.
-#' @param switch By default, facet labels are positioned to the top and right
-#'   of the panels. Use `"x"` to switch the top strip to the bottom,
-#'   use `"y"` to switch the right strip to the left, or `"both"`.
-#' @param strips Should strips be drawn only on the outer margins of groups
-#'   (`"margins"`) or also between panels (`"all"`)?
+#' @param scales Should all panels share the same scales (`"fixed"`), x-axes
+#'   vary (`"free_x"`), y-axes vary (`"free_y"`), or both (`"free"`)? Panels
+#'   within groups always share the scale along the grouping dimension.
+#' @param switch Determines how facet label strips are positioned. By default
+#'   (`"none"`), strips are drawn to the top and right of the panels. Use `"x"`
+#'   to switch the top strip to the bottom, use `"y"` to switch the right strip
+#'   to the left, or `"both"` to do both.
+#' @param strips Determines which facet label strips are drawn. By default
+#'   (`"margins"`), strips between panels along the grouping dimension will be
+#'   suppressed. Use `"all"` to always draw both strips.
+#' @param axes Determines which axes are drawn. By default (`"margins"`), axes
+#'   between panels will be suppressed if they are fixed. Use `"all_x"` to
+#'   always draw x-axes, `"all_y"` to always draw y-axes, or `"all"` to always
+#'   draw both axes.
 #' @inheritParams ggplot2::facet_wrap
 #'
 #' @returns A `Facet` that can be added to a `ggplot`.

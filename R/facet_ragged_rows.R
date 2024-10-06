@@ -2,6 +2,7 @@
 #' @rdname facet_ragged
 #' @export
 facet_ragged_rows <- function(rows, cols, ..., scales = "fixed", switch = "none", strips = "margins", axes = "margins", labeller = "label_value") {
+  rlang::check_dots_empty()
   switch <- switch %||% "none" # Compatibility with old default value NULL
 
   scales <- rlang::arg_match0(scales, c("fixed", "free_x", "free_y", "free"))

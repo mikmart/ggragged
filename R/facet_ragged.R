@@ -146,12 +146,10 @@ add_panel_decorations <- function(table, layout, grobs, kind) {
   r <- panel_cols_pos$r[layout$COL] + 1
 
   # Add decorations around panels
-  for (i in seq_along(layout$PANEL)) {
-    table <- gtable_add_grob(table, grobs$t[i], t[i], l[i] + 1, name = sprintf("%s-t-%d", kind, i))
-    table <- gtable_add_grob(table, grobs$b[i], b[i], l[i] + 1, name = sprintf("%s-b-%d", kind, i))
-    table <- gtable_add_grob(table, grobs$l[i], t[i] + 1, l[i], name = sprintf("%s-l-%d", kind, i))
-    table <- gtable_add_grob(table, grobs$r[i], t[i] + 1, r[i], name = sprintf("%s-r-%d", kind, i))
-  }
+  table <- gtable_add_grob(table, grobs$t, t, l + 1, name = sprintf("%s-t-%d", kind, layout$PANEL))
+  table <- gtable_add_grob(table, grobs$b, b, l + 1, name = sprintf("%s-b-%d", kind, layout$PANEL))
+  table <- gtable_add_grob(table, grobs$l, t + 1, l, name = sprintf("%s-l-%d", kind, layout$PANEL))
+  table <- gtable_add_grob(table, grobs$r, t + 1, r, name = sprintf("%s-r-%d", kind, layout$PANEL))
 
   table
 }
@@ -174,8 +172,7 @@ cull_inner_panel_decorations <- function(table, layout, sides, kind) {
     # Remove grobs from inner panels
     panels <- panels_with_neighbour(layout, side)
     names <- sprintf("%s-%s-%d", kind, side, panels)
-    for (name in names)
-      table <- gtable_set_grob(table, name, zeroGrob())
+    table <- gtable_set_grobs(table, names, list(zeroGrob()))
 
     # And the space allocated for them
     table <- switch(
@@ -215,10 +212,17 @@ margin_panels <- function(layout, side) {
 shift_inner_margin_axes <- function(table, layout, side) {
   for (panel in margin_panels(layout, side)) {
     if (is_panel_on_outer_margin(layout, panel, side)) next
+
+    # Get the strip and axis, bailing if either isn't there
     strip_name <- sprintf("strip-%s-%d", side, panel)
     strip <- gtable_get_grob(table, strip_name)
+    if (is.null(strip) || inherits(strip, "zeroGrob")) next
+
     axis_name <- sprintf("axis-%s-%d", side, panel)
     axis <- gtable_get_grob(table, axis_name)
+    if (is.null(axis) || inherits(axis, "zeroGrob")) next
+
+    # Shift the axis to start at the edge of the strip
     axis <- switch(
       side,
       t = grob_shift_viewport(axis, y = +grid::grobHeight(strip)),
@@ -227,7 +231,7 @@ shift_inner_margin_axes <- function(table, layout, side) {
       r = grob_shift_viewport(axis, x = +grid::grobWidth(strip)),
       stop("internal error: invalid side: ", side)
     )
-    table <- gtable_set_grob(table, axis_name, axis)
+    table <- gtable_set_grobs(table, axis_name, list(axis))
   }
   table
 }

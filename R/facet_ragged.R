@@ -129,6 +129,7 @@ FacetRagged <- ggproto("FacetRagged", Facet,
   },
 
   attach_axes = function(table, layout, ranges, coord, theme, params) {
+    # TODO: Improve performance by only rendering unique axes.
     axes <- render_axes(ranges, ranges, coord, theme)
     axes <- list(
       t = lapply(axes$x, `[[`, "top"),
@@ -141,6 +142,7 @@ FacetRagged <- ggproto("FacetRagged", Facet,
 
   attach_strips = function(table, layout, theme, params) {
     # Render strips with faceting variable data
+    # TODO: Improve performance by only rendering unique strips.
     cols_data <- layout[names(params$cols)]
     rows_data <- layout[names(params$rows)]
     strips <- render_strips(cols_data, rows_data, params$labeller, theme)

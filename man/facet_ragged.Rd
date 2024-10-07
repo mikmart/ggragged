@@ -57,7 +57,7 @@ draw both axes.}
 
 \item{align}{Determines how panels are positioned within groups. By default
 (\code{"start"}), panels in groups are densely packed from the start. Use
-\code{"end"} to pack panels to the end of the group.}
+\code{"end"} to instead pack panels to the end of the group.}
 
 \item{labeller}{A function that takes one data frame of labels and
 returns a list or data frame of character vectors. Each input

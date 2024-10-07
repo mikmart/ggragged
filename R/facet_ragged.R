@@ -25,7 +25,7 @@
 #'   draw both axes.
 #' @param align Determines how panels are positioned within groups. By default
 #'   (`"start"`), panels in groups are densely packed from the start. Use
-#'   `"end"` to pack panels to the end of the group.
+#'   `"end"` to instead pack panels to the end of the group.
 #' @inheritParams ggplot2::facet_wrap
 #'
 #' @returns A `Facet` that can be added to a `ggplot`.

@@ -1,26 +1,31 @@
-layout_ragged_rows <- function(x, free = list(), align = "start", transpose = FALSE) {
-    r <- vctrs::vec_group_rle(x)
-    n <- vctrs::field(r, "length")
-    i <- rep.int(seq_along(n), n)
-    j <- sequence(n, from = if (align == "end") max(n) - n + 1L else 1L)
+layout_ragged <- function(x, groups, align = "start") {
+  groups <- rlang::arg_match0(groups, c("rows", "cols"))
+  r <- vctrs::vec_group_rle(x)
+  n <- vctrs::field(r, "length")
 
-    if (transpose) {
-      layout <- list(PANEL = vctrs::vec_seq_along(x), ROW = j, COL = i)
-    } else {
-      layout <- list(PANEL = vctrs::vec_seq_along(x), ROW = i, COL = j)
-    }
+  PANEL <- vctrs::vec_seq_along(x)
+  ROW <- rep.int(seq_along(n), n)
+  COL <- sequence(n, from = if (align == "end") max(n) - n + 1L else 1L)
 
-    layout <- vctrs::new_data_frame(layout, vctrs::vec_size(x))
+  layout <- vctrs::data_frame(PANEL = PANEL, ROW = ROW, COL = COL)
+  if (groups == "cols")
+    layout[c("ROW", "COL")] <- layout[c("COL", "ROW")]
 
-    # FacetWrap expects SCALE to be an index into panels, so we can't just use ROW/COL directly
-    layout$SCALE_X <- if (!isTRUE(free$x)) 1L else if (transpose) cumsum(n)[layout$COL] else layout$PANEL
-    layout$SCALE_Y <- if (!isTRUE(free$y)) 1L else if (transpose) layout$PANEL else cumsum(n)[layout$ROW]
-
-    layout
+  layout
 }
 
-layout_ragged_cols <- function(x, free = list(), align = "start", transpose = FALSE) {
-  layout_ragged_rows(x, free = free, align = align, transpose = !transpose)
+layout_ragged_rows <- function(x, free = list(), align = "start") {
+  layout <- layout_ragged(x, groups = "rows", align = align)
+  layout$SCALE_X <- if (!isTRUE(free$x)) 1L else layout$PANEL
+  layout$SCALE_Y <- if (!isTRUE(free$y)) 1L else layout$ROW
+  layout
+}
+
+layout_ragged_cols <- function(x, free = list(), align = "start") {
+  layout <- layout_ragged(x, groups = "cols", align = align)
+  layout$SCALE_X <- if (!isTRUE(free$x)) 1L else layout$COL
+  layout$SCALE_Y <- if (!isTRUE(free$y)) 1L else layout$PANEL
+  layout
 }
 
 panels_with_neighbour <- function(layout, side) {

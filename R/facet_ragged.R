@@ -185,19 +185,6 @@ add_panel_decorations <- function(table, layout, grobs, kind) {
   table
 }
 
-set_strip_viewport <- function(strip, side) {
-  strip$vp <- switch(
-    substr(side, 1, 1),
-    # TODO: `clip = "off"` not needed in ggplot2 dev version (3.5.1.9000), could be removed in the future.
-    t = grid::viewport(clip = "off", height = grid::grobHeight(strip), y = unit(0, "npc"), just = "bottom"),
-    b = grid::viewport(clip = "off", height = grid::grobHeight(strip), y = unit(1, "npc"), just = "top"),
-    l = grid::viewport(clip = "off", width = grid::grobWidth(strip), x = unit(1, "npc"), just = "right"),
-    r = grid::viewport(clip = "off", width = grid::grobWidth(strip), x = unit(0, "npc"), just = "left"),
-    stop("internal error: invalid side: ", side)
-  )
-  strip
-}
-
 cull_inner_panel_decorations <- function(table, layout, sides, kind) {
   kind <- rlang::arg_match0(kind, c("axis", "strip"))
   for (side in sides) {
@@ -225,26 +212,8 @@ cull_inner_panel_decorations <- function(table, layout, sides, kind) {
   table
 }
 
-panels_with_neighbour <- function(layout, side) {
-  neighbour <- switch(
-    side,
-    t = list(PANEL = layout$PANEL, ROW = layout$ROW - 1, COL = layout$COL),
-    b = list(PANEL = layout$PANEL, ROW = layout$ROW + 1, COL = layout$COL),
-    l = list(PANEL = layout$PANEL, ROW = layout$ROW, COL = layout$COL - 1),
-    r = list(PANEL = layout$PANEL, ROW = layout$ROW, COL = layout$COL + 1),
-    stop("internal error: invalid side: ", side)
-  )
-  merge(layout[c("ROW", "COL")], neighbour)$PANEL
-}
-
-margin_panels <- function(layout, side) {
-  setdiff(layout$PANEL, panels_with_neighbour(layout, side))
-}
-
 shift_inner_margin_axes <- function(table, layout, side) {
-  for (panel in margin_panels(layout, side)) {
-    if (is_panel_on_outer_margin(layout, panel, side)) next
-
+  for (panel in inner_margin_panels(layout, side)) {
     # Get the strip and axis, bailing if either isn't there
     strip_name <- sprintf("strip-%s-%d", side, panel)
     strip <- gtable_get_grob(table, strip_name)
@@ -268,13 +237,46 @@ shift_inner_margin_axes <- function(table, layout, side) {
   table
 }
 
-is_panel_on_outer_margin <- function(layout, panel, side) {
-  switch(
+panels_with_neighbour <- function(layout, side) {
+  neighbour <- switch(
     side,
-    t = layout[match(panel, layout$PANEL), "ROW"] == min(layout$ROW),
-    b = layout[match(panel, layout$PANEL), "ROW"] == max(layout$ROW),
-    l = layout[match(panel, layout$PANEL), "COL"] == min(layout$COL),
-    r = layout[match(panel, layout$PANEL), "COL"] == max(layout$COL),
+    t = list(PANEL = layout$PANEL, ROW = layout$ROW - 1, COL = layout$COL),
+    b = list(PANEL = layout$PANEL, ROW = layout$ROW + 1, COL = layout$COL),
+    l = list(PANEL = layout$PANEL, ROW = layout$ROW, COL = layout$COL - 1),
+    r = list(PANEL = layout$PANEL, ROW = layout$ROW, COL = layout$COL + 1),
     stop("internal error: invalid side: ", side)
   )
+  merge(layout[c("ROW", "COL")], neighbour)$PANEL
+}
+
+inner_margin_panels <- function(layout, side) {
+  setdiff(margin_panels(layout, side), outermost_panels(layout, side))
+}
+
+margin_panels <- function(layout, side) {
+  setdiff(layout$PANEL, panels_with_neighbour(layout, side))
+}
+
+outermost_panels <- function(layout, side) {
+  switch(
+    side,
+    t = layout$PANEL[layout$ROW == min(layout$ROW)],
+    b = layout$PANEL[layout$ROW == max(layout$ROW)],
+    l = layout$PANEL[layout$COL == min(layout$COL)],
+    r = layout$PANEL[layout$COL == max(layout$COL)],
+    stop("internal error: invalid side: ", side)
+  )
+}
+
+set_strip_viewport <- function(strip, side) {
+  strip$vp <- switch(
+    substr(side, 1, 1),
+    # TODO: `clip = "off"` not needed in ggplot2 dev version (3.5.1.9000), could be removed in the future.
+    t = grid::viewport(clip = "off", height = grid::grobHeight(strip), y = unit(0, "npc"), just = "bottom"),
+    b = grid::viewport(clip = "off", height = grid::grobHeight(strip), y = unit(1, "npc"), just = "top"),
+    l = grid::viewport(clip = "off", width = grid::grobWidth(strip), x = unit(1, "npc"), just = "right"),
+    r = grid::viewport(clip = "off", width = grid::grobWidth(strip), x = unit(0, "npc"), just = "left"),
+    stop("internal error: invalid side: ", side)
+  )
+  strip
 }

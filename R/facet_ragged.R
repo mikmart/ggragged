@@ -237,37 +237,6 @@ shift_inner_margin_axes <- function(table, layout, side) {
   table
 }
 
-panels_with_neighbour <- function(layout, side) {
-  neighbour <- switch(
-    side,
-    t = list(PANEL = layout$PANEL, ROW = layout$ROW - 1, COL = layout$COL),
-    b = list(PANEL = layout$PANEL, ROW = layout$ROW + 1, COL = layout$COL),
-    l = list(PANEL = layout$PANEL, ROW = layout$ROW, COL = layout$COL - 1),
-    r = list(PANEL = layout$PANEL, ROW = layout$ROW, COL = layout$COL + 1),
-    stop("internal error: invalid side: ", side)
-  )
-  merge(layout[c("ROW", "COL")], neighbour)$PANEL
-}
-
-inner_margin_panels <- function(layout, side) {
-  setdiff(margin_panels(layout, side), outermost_panels(layout, side))
-}
-
-margin_panels <- function(layout, side) {
-  setdiff(layout$PANEL, panels_with_neighbour(layout, side))
-}
-
-outermost_panels <- function(layout, side) {
-  switch(
-    side,
-    t = layout$PANEL[layout$ROW == min(layout$ROW)],
-    b = layout$PANEL[layout$ROW == max(layout$ROW)],
-    l = layout$PANEL[layout$COL == min(layout$COL)],
-    r = layout$PANEL[layout$COL == max(layout$COL)],
-    stop("internal error: invalid side: ", side)
-  )
-}
-
 set_strip_viewport <- function(strip, side) {
   strip$vp <- switch(
     substr(side, 1, 1),

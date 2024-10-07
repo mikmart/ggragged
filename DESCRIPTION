@@ -15,6 +15,7 @@ BugReports: https://github.com/mikmart/ggragged/issues
 Depends: 
     ggplot2
 Imports:
+    grid,
     gtable,
     rlang,
     vctrs
@@ -24,6 +25,7 @@ Suggests:
     nlme,
     ragg,
     rmarkdown,
+    roxygen2,
     testthat (>= 3.0.0),
     vdiffr
 VignetteBuilder: 
@@ -31,7 +33,7 @@ VignetteBuilder:
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Collate: 
     'facet_ragged.R'
     'facet_ragged_rows.R'
@@ -40,4 +42,3 @@ Collate:
     'grid.R'
     'gtable.R'
     'layout.R'
-    'utils.R'

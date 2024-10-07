@@ -12,7 +12,9 @@ facet_ragged_rows(
   cols,
   ...,
   scales = "fixed",
-  switch = NULL,
+  switch = "none",
+  strips = "margins",
+  axes = "margins",
   labeller = "label_value"
 )
 
@@ -21,23 +23,35 @@ facet_ragged_cols(
   cols,
   ...,
   scales = "fixed",
-  switch = NULL,
+  switch = "none",
+  strips = "margins",
+  axes = "margins",
   labeller = "label_value"
 )
 }
 \arguments{
 \item{rows, cols}{A set of variables or expressions quoted by \code{\link[ggplot2:vars]{ggplot2::vars()}},
-the combinations of which define panels to be included in the grid.}
+the combinations of which define the panels to be included in the layout.}
 
 \item{...}{Arguments reserved for future use.}
 
-\item{scales}{Should all panels share the same scales (\code{"fixed"}),
-x-axes vary (\code{"free_x"}), y-axes vary (\code{"free_y"}), or both (\code{"free"})?
-Panels within groups always share the scale along the grouping dimension.}
+\item{scales}{Should all panels share the same scales (\code{"fixed"}), x-axes
+vary (\code{"free_x"}), y-axes vary (\code{"free_y"}), or both (\code{"free"})? Panels
+within groups always share the scale along the grouping dimension.}
 
-\item{switch}{By default, facet labels are positioned to the top and right
-of the panels. Use \code{"x"} to switch the top strip to the bottom,
-use \code{"y"} to switch the right strip to the left, or \code{"both"}.}
+\item{switch}{Determines how facet label strips are positioned. By default
+(\code{"none"}), strips are drawn to the top and right of the panels. Use \code{"x"}
+to switch the top strip to the bottom, use \code{"y"} to switch the right strip
+to the left, or \code{"both"} to do both.}
+
+\item{strips}{Determines which facet label strips are drawn. By default
+(\code{"margins"}), strips between panels along the grouping dimension will be
+suppressed. Use \code{"all"} to always draw both strips.}
+
+\item{axes}{Determines which axes are drawn. By default (\code{"margins"}), axes
+between panels will be suppressed if they are fixed. Use \code{"all_x"} to
+always draw x-axes, \code{"all_y"} to always draw y-axes, or \code{"all"} to always
+draw both axes.}
 
 \item{labeller}{A function that takes one data frame of labels and
 returns a list or data frame of character vectors. Each input

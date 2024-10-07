@@ -1,36 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://mikmart.github.io/ggragged/404.html</loc>
-  </url>
-  <url>
-    <loc>https://mikmart.github.io/ggragged/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://mikmart.github.io/ggragged/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://mikmart.github.io/ggragged/articles/ggragged.html</loc>
-  </url>
-  <url>
-    <loc>https://mikmart.github.io/ggragged/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mikmart.github.io/ggragged/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://mikmart.github.io/ggragged/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mikmart.github.io/ggragged/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mikmart.github.io/ggragged/reference/facet_ragged.html</loc>
-  </url>
-  <url>
-    <loc>https://mikmart.github.io/ggragged/reference/ggragged-package.html</loc>
-  </url>
-  <url>
-    <loc>https://mikmart.github.io/ggragged/reference/index.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://mikmart.github.io/ggragged/404.html</loc></url>
+<url><loc>https://mikmart.github.io/ggragged/LICENSE-text.html</loc></url>
+<url><loc>https://mikmart.github.io/ggragged/LICENSE.html</loc></url>
+<url><loc>https://mikmart.github.io/ggragged/articles/ggragged.html</loc></url>
+<url><loc>https://mikmart.github.io/ggragged/articles/index.html</loc></url>
+<url><loc>https://mikmart.github.io/ggragged/authors.html</loc></url>
+<url><loc>https://mikmart.github.io/ggragged/index.html</loc></url>
+<url><loc>https://mikmart.github.io/ggragged/news/index.html</loc></url>
+<url><loc>https://mikmart.github.io/ggragged/reference/facet_ragged.html</loc></url>
+<url><loc>https://mikmart.github.io/ggragged/reference/ggragged-package.html</loc></url>
+<url><loc>https://mikmart.github.io/ggragged/reference/index.html</loc></url>
 </urlset>
+

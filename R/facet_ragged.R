@@ -163,15 +163,19 @@ add_panel_decorations <- function(table, layout, grobs, kind) {
   kind <- rlang::arg_match0(kind, c("axis", "strip"))
 
   # Add rows for horizontal decorations
+  height_t <- max_height(grobs$t)
+  height_b <- max_height(grobs$b)
   for (t in sort(panel_rows(table)$t, decreasing = TRUE)) {
-    table <- gtable_add_rows(table, max_height(grobs$t), t - 1)
-    table <- gtable_add_rows(table, max_height(grobs$b), t + 1)
+    table <- gtable_add_rows(table, height_t, t - 1)
+    table <- gtable_add_rows(table, height_b, t + 1)
   }
 
   # Add columns for vertical decorations
+  width_l <- max_width(grobs$l)
+  width_r <- max_width(grobs$r)
   for (l in sort(panel_cols(table)$l, decreasing = TRUE)) {
-    table <- gtable_add_cols(table, max_width(grobs$l), l - 1)
-    table <- gtable_add_cols(table, max_width(grobs$r), l + 1)
+    table <- gtable_add_cols(table, width_l, l - 1)
+    table <- gtable_add_cols(table, width_r, l + 1)
   }
 
   # Find panel positions after layout changes

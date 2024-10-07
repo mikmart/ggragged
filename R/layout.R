@@ -1,5 +1,7 @@
 layout_ragged <- function(x, groups, align = "start") {
   groups <- rlang::arg_match0(groups, c("rows", "cols"))
+  align <- rlang::arg_match0(align, c("start", "end"))
+
   r <- vctrs::vec_group_rle(x)
   n <- vctrs::field(r, "length")
 

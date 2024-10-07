@@ -174,19 +174,13 @@ add_panel_decorations <- function(table, layout, grobs, kind) {
   }
 
   # Find panel positions after layout changes
-  panel_rows_pos <- vctrs::vec_sort(panel_rows(table))
-  panel_cols_pos <- vctrs::vec_sort(panel_cols(table))
-
-  t <- panel_rows_pos$t[layout$ROW] - 1
-  b <- panel_rows_pos$b[layout$ROW] + 1
-  l <- panel_cols_pos$l[layout$COL] - 1
-  r <- panel_cols_pos$r[layout$COL] + 1
+  panel_pos <- gtable_get_grob_position(table, sprintf("panel-%d", layout$PANEL))
 
   # Add decorations around panels
-  table <- gtable_add_grob(table, grobs$t, t, l + 1, name = sprintf("%s-t-%d", kind, layout$PANEL))
-  table <- gtable_add_grob(table, grobs$b, b, l + 1, name = sprintf("%s-b-%d", kind, layout$PANEL))
-  table <- gtable_add_grob(table, grobs$l, t + 1, l, name = sprintf("%s-l-%d", kind, layout$PANEL))
-  table <- gtable_add_grob(table, grobs$r, t + 1, r, name = sprintf("%s-r-%d", kind, layout$PANEL))
+  table <- gtable_add_grob(table, grobs$t, panel_pos$t - 1, panel_pos$l, name = sprintf("%s-t-%d", kind, layout$PANEL))
+  table <- gtable_add_grob(table, grobs$b, panel_pos$b + 1, panel_pos$l, name = sprintf("%s-b-%d", kind, layout$PANEL))
+  table <- gtable_add_grob(table, grobs$l, panel_pos$t, panel_pos$l - 1, name = sprintf("%s-l-%d", kind, layout$PANEL))
+  table <- gtable_add_grob(table, grobs$r, panel_pos$t, panel_pos$r + 1, name = sprintf("%s-r-%d", kind, layout$PANEL))
 
   table
 }

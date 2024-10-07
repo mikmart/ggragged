@@ -45,20 +45,12 @@ FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
     cbind(layout, panels)
   },
 
-  attach_axes = function(table, layout, ranges, coord, theme, params) {
-    table <- FacetRagged$attach_axes(table, layout, ranges, coord, theme, params)
-
+  finalise_gtable = function(table, layout, params) {
     if (!params$axes$x && !params$free$x)
       table <- cull_inner_panel_decorations(table, layout, sides = c("t", "b"), kind = "axis")
 
     if (!params$axes$y)
       table <- cull_inner_panel_decorations(table, layout, sides = c("l", "r"), kind = "axis")
-
-    table
-  },
-
-  attach_strips = function(table, layout, theme, params) {
-    table <- FacetRagged$attach_strips(table, layout, theme, params)
 
     if (params$strips == "margins")
       table <- cull_inner_panel_decorations(table, layout, sides = c("l", "r"), kind = "strip")
@@ -66,3 +58,10 @@ FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
     table
   }
 )
+
+layout_ragged_rows <- function(x, free = list(), align = "start") {
+  layout <- layout_ragged(x, groups = "rows", align = align)
+  layout$SCALE_X <- if (!isTRUE(free$x)) 1L else layout$PANEL
+  layout$SCALE_Y <- if (!isTRUE(free$y)) 1L else layout$ROW
+  layout
+}

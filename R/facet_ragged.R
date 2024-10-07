@@ -103,6 +103,7 @@ FacetRagged <- ggproto("FacetRagged", Facet,
     table <- self$init_gtable(panels, layout, ranges, coord, theme, params)
     table <- self$attach_axes(table, layout, ranges, coord, theme, params)
     table <- self$attach_strips(table, layout, theme, params)
+    table <- self$finalise_gtable(table, layout, params)
     table
   },
 

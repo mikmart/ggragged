@@ -14,20 +14,6 @@ layout_ragged <- function(x, groups, align = "start") {
   layout
 }
 
-layout_ragged_rows <- function(x, free = list(), align = "start") {
-  layout <- layout_ragged(x, groups = "rows", align = align)
-  layout$SCALE_X <- if (!isTRUE(free$x)) 1L else layout$PANEL
-  layout$SCALE_Y <- if (!isTRUE(free$y)) 1L else layout$ROW
-  layout
-}
-
-layout_ragged_cols <- function(x, free = list(), align = "start") {
-  layout <- layout_ragged(x, groups = "cols", align = align)
-  layout$SCALE_X <- if (!isTRUE(free$x)) 1L else layout$COL
-  layout$SCALE_Y <- if (!isTRUE(free$y)) 1L else layout$PANEL
-  layout
-}
-
 panels_with_neighbour <- function(layout, side) {
   neighbour <- switch(
     side,

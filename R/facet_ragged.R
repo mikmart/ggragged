@@ -7,10 +7,11 @@
 #' nested or partially crossed relationships between faceting variables.
 #'
 #' @param rows,cols A set of variables or expressions quoted by [ggplot2::vars()],
-#'   the combinations of which define the panels to be included in the layout.
+#'   the combinations of which define the panels in the layout.
 #' @param ... Arguments reserved for future use.
-#' @param scales Should all panels share the same scales (`"fixed"`), x-axes
-#'   vary (`"free_x"`), y-axes vary (`"free_y"`), or both (`"free"`)? Panels
+#' @param scales Determines which panels share axis ranges. By default (`"fixed"`),
+#'   all panels share the same scales. Use `"free_x"` to let x-axes vary, use
+#'   `"free_y"` to let y-axes vary, or `"free"` to let both axes vary. Panels
 #'   within groups always share the scale along the grouping dimension.
 #' @param switch Determines how facet label strips are positioned. By default
 #'   (`"none"`), strips are drawn to the top and right of the panels. Use `"x"`
@@ -31,37 +32,30 @@
 #' @returns A `Facet` that can be added to a `ggplot`.
 #'
 #' @examples
-#' p <- ggplot(Indometh, aes(time, conc)) + geom_line()
+#' p <- ggplot(mpg, aes(displ, cty)) + geom_point()
+#' p + facet_ragged_rows(vars(drv), vars(cyl))
+#' p + facet_ragged_cols(vars(cyl), vars(drv))
 #'
-#' # Panels for each subject, with cohorts on separate rows
-#' p + facet_ragged_rows(
-#'   vars(Cohort = 1 + Subject %in% 3:6),
-#'   vars(Subject = as.character(Subject)),
-#'   labeller = label_both
-#' )
+#' # Allow axes to vary between panels
+#' p + facet_ragged_rows(vars(drv), vars(cyl), scales = "free_y")
+#' p + facet_ragged_rows(vars(drv), vars(cyl), scales = "free")
 #'
-#' # Independent y-axes between rows of cohorts
-#' p + facet_ragged_rows(
-#'   vars(Cohort = 1 + Subject %in% 3:6),
-#'   vars(Subject = as.character(Subject)),
-#'   labeller = label_both,
-#'   scales = "free_y"
-#' )
+#' # Change strip label positions
+#' p + facet_ragged_rows(vars(drv), vars(cyl), switch = "y")
+#' p + facet_ragged_rows(vars(drv), vars(cyl), switch = "both")
 #'
-#' # Panels for each subject, with cohorts in separate columns
-#' p + facet_ragged_cols(
-#'   vars(Subject = as.character(Subject)),
-#'   vars(Cohort = 1 + Subject %in% 3:6),
-#'   labeller = label_both
-#' )
+#' # Draw strips between panels
+#' p + facet_ragged_rows(vars(drv), vars(cyl), strips = "all")
 #'
-#' # Independent y-axes for all subjects
-#' p + facet_ragged_cols(
-#'   vars(Subject = as.character(Subject)),
-#'   vars(Cohort = 1 + Subject %in% 3:6),
-#'   labeller = label_both,
-#'   scales = "free_y"
-#' )
+#' # Draw axes between panels
+#' p + facet_ragged_rows(vars(drv), vars(cyl), axes = "all_x")
+#' p + facet_ragged_rows(vars(drv), vars(cyl), axes = "all")
+#'
+#' # Change panel alignment
+#' p + facet_ragged_rows(vars(drv), vars(cyl), align = "end")
+#'
+#' # Format strip labels
+#' p + facet_ragged_rows(vars(drv), vars(cyl), labeller = "label_both")
 #' @name facet_ragged
 NULL
 

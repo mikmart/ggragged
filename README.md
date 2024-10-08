@@ -47,25 +47,14 @@ panel layout:
 library(ggplot2)
 library(ggragged)
 
-p <- ggplot(Indometh, aes(time, conc)) + geom_line()
-
-# Panels for each subject, with cohorts on separate rows
-p + facet_ragged_rows(
- vars(Cohort = 1 + Subject %in% 3:6),
- vars(Subject = as.character(Subject)),
- labeller = label_both
-)
+p <- ggplot(mpg, aes(displ, cty)) + geom_point()
+p + facet_ragged_rows(vars(drv), vars(cyl))
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
 
 ``` r
-# Panels for each subject, with cohorts in separate columns
-p + facet_ragged_cols(
- vars(Subject = as.character(Subject)),
- vars(Cohort = 1 + Subject %in% 3:6),
- labeller = label_both
-)
+p + facet_ragged_cols(vars(cyl), vars(drv))
 ```
 
 <img src="man/figures/README-example-2.png" width="100%" />

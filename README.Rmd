@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 # ggragged <a href="https://mikmart.github.io/ggragged/"><img src="man/figures/logo.png" align="right" height="139" /></a>
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R-CMD-check](https://github.com/mikmart/ggragged/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mikmart/ggragged/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/mikmart/ggragged/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mikmart/ggragged?branch=main)
 [![CRAN status](https://www.r-pkg.org/badges/version/ggragged)](https://CRAN.R-project.org/package=ggragged)

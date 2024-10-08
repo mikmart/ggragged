@@ -129,8 +129,7 @@ FacetRagged <- ggproto("FacetRagged", Facet,
   },
 
   attach_axes = function(table, layout, ranges, coord, theme, params) {
-    # TODO: Improve performance by only rendering unique axes.
-    axes <- render_axes(ranges, ranges, coord, theme)
+    axes <- render_unique_axes(layout, ranges, coord, theme)
     axes <- list(
       t = lapply(axes$x, `[[`, "top"),
       b = lapply(axes$x, `[[`, "bottom"),
@@ -142,10 +141,9 @@ FacetRagged <- ggproto("FacetRagged", Facet,
 
   attach_strips = function(table, layout, theme, params) {
     # Render strips with faceting variable data
-    # TODO: Improve performance by only rendering unique strips.
     cols_data <- layout[names(params$cols)]
     rows_data <- layout[names(params$rows)]
-    strips <- render_strips(cols_data, rows_data, params$labeller, theme)
+    strips <- render_unique_strips(cols_data, rows_data, params$labeller, theme)
     strips <- c(strips$x, strips$y)
 
     # Zero out strips which shouldn't be added
@@ -160,6 +158,43 @@ FacetRagged <- ggproto("FacetRagged", Facet,
     add_panel_decorations(table, layout, strips, kind = "strip")
   }
 )
+
+render_unique_axes <- function(layout, ranges, coord, theme) {
+  if (inherits(coord, "CoordFlip")) {
+    # Switch the scales back
+    layout[c("SCALE_X", "SCALE_Y")] <- layout[c("SCALE_Y", "SCALE_X")]
+  }
+
+  # Identify groups
+  SCALE_X <- match(layout$SCALE_X, unique(layout$SCALE_X))
+  SCALE_Y <- match(layout$SCALE_Y, unique(layout$SCALE_Y))
+
+  # Render representatives
+  x_rep <- ranges[match(unique(SCALE_X), SCALE_X)]
+  y_rep <- ranges[match(unique(SCALE_Y), SCALE_Y)]
+  axes <- render_axes(x_rep, y_rep, coord, theme)
+
+  # Distribute to groups
+  axes$x <- axes$x[SCALE_X]
+  axes$y <- axes$y[SCALE_Y]
+  axes
+}
+
+render_unique_strips <- function(x, y, labeller, theme) {
+  # Identify groups
+  STRIP_X <- vctrs::vec_match(x, vctrs::vec_unique(x))
+  STRIP_Y <- vctrs::vec_match(y, vctrs::vec_unique(y))
+
+  # Render representatives
+  x_rep <- vctrs::vec_slice(x, match(unique(STRIP_X), STRIP_X))
+  y_rep <- vctrs::vec_slice(y, match(unique(STRIP_Y), STRIP_Y))
+  strips <- render_strips(x_rep, y_rep, labeller, theme)
+
+  # Distribute to groups
+  strips$x <- lapply(strips$x, function(x) x[STRIP_X])
+  strips$y <- lapply(strips$y, function(y) y[STRIP_Y])
+  strips
+}
 
 add_panel_decorations <- function(table, layout, grobs, kind) {
   kind <- rlang::arg_match0(kind, c("axis", "strip"))

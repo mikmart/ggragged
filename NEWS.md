@@ -2,9 +2,9 @@
 
 ## New features
 
-* Added a new parameter `strips` to control how strips are drawn between panels.
-* Added a new parameter `axes` to control how axes are drawn between panels.
-* Added a new parameter `align` to control how panels are positioned within rows/columns.
+* Facets gain a `strips` parameter to control how strips are drawn between panels.
+* Facets gain an `axes` parameter to control how axes are drawn between panels.
+* Facets gain an `align` parameter to control how panels are positioned within rows/columns.
 * Added a vignette showing examples of usage in broader context.
 
 ## Bug fixes

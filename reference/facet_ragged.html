@@ -15,7 +15,7 @@ nested or partially crossed relationships between faceting variables."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">ggragged</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +59,7 @@ nested or partially crossed relationships between faceting variables.</p>
 <span>  switch <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  strips <span class="op">=</span> <span class="st">"margins"</span>,</span>
 <span>  axes <span class="op">=</span> <span class="st">"margins"</span>,</span>
+<span>  align <span class="op">=</span> <span class="st">"start"</span>,</span>
 <span>  labeller <span class="op">=</span> <span class="st">"label_value"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -70,6 +71,7 @@ nested or partially crossed relationships between faceting variables.</p>
 <span>  switch <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  strips <span class="op">=</span> <span class="st">"margins"</span>,</span>
 <span>  axes <span class="op">=</span> <span class="st">"margins"</span>,</span>
+<span>  align <span class="op">=</span> <span class="st">"start"</span>,</span>
 <span>  labeller <span class="op">=</span> <span class="st">"label_value"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -80,7 +82,7 @@ nested or partially crossed relationships between faceting variables.</p>
 
 <dl><dt id="arg-rows-cols">rows, cols<a class="anchor" aria-label="anchor" href="#arg-rows-cols"></a></dt>
 <dd><p>A set of variables or expressions quoted by <code><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">ggplot2::vars()</a></code>,
-the combinations of which define the panels to be included in the layout.</p></dd>
+the combinations of which define the panels in the layout.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -88,8 +90,9 @@ the combinations of which define the panels to be included in the layout.</p></d
 
 
 <dt id="arg-scales">scales<a class="anchor" aria-label="anchor" href="#arg-scales"></a></dt>
-<dd><p>Should all panels share the same scales (<code>"fixed"</code>), x-axes
-vary (<code>"free_x"</code>), y-axes vary (<code>"free_y"</code>), or both (<code>"free"</code>)? Panels
+<dd><p>Determines which panels share axis ranges. By default (<code>"fixed"</code>),
+all panels share the same scales. Use <code>"free_x"</code> to let x-axes vary, use
+<code>"free_y"</code> to let y-axes vary, or <code>"free"</code> to let both axes vary. Panels
 within groups always share the scale along the grouping dimension.</p></dd>
 
 
@@ -113,6 +116,12 @@ always draw x-axes, <code>"all_y"</code> to always draw y-axes, or <code>"all"</
 draw both axes.</p></dd>
 
 
+<dt id="arg-align">align<a class="anchor" aria-label="anchor" href="#arg-align"></a></dt>
+<dd><p>Determines how panels are positioned within groups. By default
+(<code>"start"</code>), panels in groups are densely packed from the start. Use
+<code>"end"</code> to instead pack panels to the end of the group.</p></dd>
+
+
 <dt id="arg-labeller">labeller<a class="anchor" aria-label="anchor" href="#arg-labeller"></a></dt>
 <dd><p>A function that takes one data frame of labels and
 returns a list or data frame of character vectors. Each input
@@ -133,41 +142,37 @@ check it for more details and pointers to other options.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">Indometh</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">conc</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Panels for each subject, with cohorts on separate rows</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_rows</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span>Cohort <span class="op">=</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">Subject</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">3</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span>Subject <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Subject</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  labeller <span class="op">=</span> <span class="va">label_both</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">mpg</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">displ</span>, <span class="va">cty</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_rows</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drv</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="facet_ragged-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Independent y-axes between rows of cohorts</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_rows</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span>Cohort <span class="op">=</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">Subject</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">3</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span>Subject <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Subject</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  labeller <span class="op">=</span> <span class="va">label_both</span>,</span></span>
-<span class="r-in"><span>  scales <span class="op">=</span> <span class="st">"free_y"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_cols</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drv</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="facet_ragged-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Panels for each subject, with cohorts in separate columns</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_cols</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span>Subject <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Subject</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span>Cohort <span class="op">=</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">Subject</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">3</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  labeller <span class="op">=</span> <span class="va">label_both</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># Allow axes to vary between panels</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_rows</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drv</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="facet_ragged-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Independent y-axes for all subjects</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_cols</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span>Subject <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Subject</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span>Cohort <span class="op">=</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">Subject</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">3</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  labeller <span class="op">=</span> <span class="va">label_both</span>,</span></span>
-<span class="r-in"><span>  scales <span class="op">=</span> <span class="st">"free_y"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_rows</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drv</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="facet_ragged-4.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Change strip label positions</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_rows</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drv</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span>, switch <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="facet_ragged-5.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_rows</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drv</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span>, switch <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="facet_ragged-6.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Draw strips between panels</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_rows</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drv</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span>, strips <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="facet_ragged-7.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Draw axes between panels</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_rows</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drv</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span>, axes <span class="op">=</span> <span class="st">"all_x"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="facet_ragged-8.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_rows</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drv</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span>, axes <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="facet_ragged-9.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="co"># Change panel alignment</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">facet_ragged_rows</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drv</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span>, align <span class="op">=</span> <span class="st">"end"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="facet_ragged-10.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

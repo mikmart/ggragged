@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggragged</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,12 +33,20 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="ggragged-development-version">ggragged (development version)<a class="anchor" aria-label="anchor" href="#ggragged-development-version"></a></h2>
-<ul><li>Added a vignette showing examples of usage in broader context.</li>
-<li>Fixed an issue that caused the package to fail to build (with an “argument is missing” error message) when an older version of ggplot2 was installed.</li>
-<li>Added new parameters <code>strips</code> and <code>axes</code> to facets that control whether strips and axes respectively are drawn between adjacent panels.</li>
-<li>Fixed an issue that caused some axes to be rendered incorrectly when using free scales with <code><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip()</a></code> (<a href="https://github.com/mikmart/ggragged/issues/2" class="external-link">#2</a>).</li>
+<h2 class="pkg-version" data-toc-text="0.2.0" id="ggragged-020">ggragged 0.2.0<a class="anchor" aria-label="anchor" href="#ggragged-020"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-2-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
+<ul><li>Facets gain a <code>strips</code> parameter to control how strips are drawn between panels.</li>
+<li>Facets gain an <code>axes</code> parameter to control how axes are drawn between panels.</li>
+<li>Facets gain an <code>align</code> parameter to control how panels are positioned within rows/columns.</li>
+<li>Added a vignette showing examples of usage in broader context.</li>
 </ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-2-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0"></a></h3>
+<ul><li>Fixed an issue that caused some axes to be rendered incorrectly when using free scales with <code><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip()</a></code> (<a href="https://github.com/mikmart/ggragged/issues/2" class="external-link">#2</a>).</li>
+<li>Fixed an issue that caused the package to fail to build (with an “argument is missing” error message) when an older version of ggplot2 was installed.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="ggragged-010">ggragged 0.1.0<a class="anchor" aria-label="anchor" href="#ggragged-010"></a></h2><p class="text-muted">CRAN release: 2023-04-20</p>
 <ul><li>Initial release.</li>

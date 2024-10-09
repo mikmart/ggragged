@@ -1,6 +1,6 @@
 Package: ggragged
 Title: Ragged Grids for 'ggplot2'
-Version: 0.2.0
+Version: 0.2.0.9000
 Authors@R: 
     person("Mikko", "Marttila", , "mikkmart@protonmail.com", role = c("aut", "cre", "cph"))
 Description: Extend 'ggplot2' facets to panel layouts arranged in a grid

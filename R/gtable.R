@@ -18,3 +18,7 @@ gtable_set_width <- function(x, name, width) {
   x$widths[l] <- width
   x
 }
+
+gtable_get_grob_position <- function(x, name) {
+  x$layout[match(name, x$layout$name), c("t", "b", "l", "r")]
+}

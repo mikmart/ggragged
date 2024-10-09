@@ -15,6 +15,7 @@ facet_ragged_rows(
   switch = "none",
   strips = "margins",
   axes = "margins",
+  align = "start",
   labeller = "label_value"
 )
 
@@ -26,17 +27,19 @@ facet_ragged_cols(
   switch = "none",
   strips = "margins",
   axes = "margins",
+  align = "start",
   labeller = "label_value"
 )
 }
 \arguments{
 \item{rows, cols}{A set of variables or expressions quoted by \code{\link[ggplot2:vars]{ggplot2::vars()}},
-the combinations of which define the panels to be included in the layout.}
+the combinations of which define the panels in the layout.}
 
 \item{...}{Arguments reserved for future use.}
 
-\item{scales}{Should all panels share the same scales (\code{"fixed"}), x-axes
-vary (\code{"free_x"}), y-axes vary (\code{"free_y"}), or both (\code{"free"})? Panels
+\item{scales}{Determines which panels share axis ranges. By default (\code{"fixed"}),
+all panels share the same scales. Use \code{"free_x"} to let x-axes vary, use
+\code{"free_y"} to let y-axes vary, or \code{"free"} to let both axes vary. Panels
 within groups always share the scale along the grouping dimension.}
 
 \item{switch}{Determines how facet label strips are positioned. By default
@@ -52,6 +55,10 @@ suppressed. Use \code{"all"} to always draw both strips.}
 between panels will be suppressed if they are fixed. Use \code{"all_x"} to
 always draw x-axes, \code{"all_y"} to always draw y-axes, or \code{"all"} to always
 draw both axes.}
+
+\item{align}{Determines how panels are positioned within groups. By default
+(\code{"start"}), panels in groups are densely packed from the start. Use
+\code{"end"} to instead pack panels to the end of the group.}
 
 \item{labeller}{A function that takes one data frame of labels and
 returns a list or data frame of character vectors. Each input
@@ -75,35 +82,25 @@ for a grid with ragged edges. This can be useful, for example, to represent
 nested or partially crossed relationships between faceting variables.
 }
 \examples{
-p <- ggplot(Indometh, aes(time, conc)) + geom_line()
+p <- ggplot(mpg, aes(displ, cty)) + geom_point()
+p + facet_ragged_rows(vars(drv), vars(cyl))
+p + facet_ragged_cols(vars(cyl), vars(drv))
+\donttest{
+# Allow axes to vary between panels
+p + facet_ragged_rows(vars(drv), vars(cyl), scales = "free_y")
+p + facet_ragged_rows(vars(drv), vars(cyl), scales = "free")
 
-# Panels for each subject, with cohorts on separate rows
-p + facet_ragged_rows(
-  vars(Cohort = 1 + Subject \%in\% 3:6),
-  vars(Subject = as.character(Subject)),
-  labeller = label_both
-)
+# Change strip label positions
+p + facet_ragged_rows(vars(drv), vars(cyl), switch = "y")
+p + facet_ragged_rows(vars(drv), vars(cyl), switch = "both")
 
-# Independent y-axes between rows of cohorts
-p + facet_ragged_rows(
-  vars(Cohort = 1 + Subject \%in\% 3:6),
-  vars(Subject = as.character(Subject)),
-  labeller = label_both,
-  scales = "free_y"
-)
+# Draw strips between panels
+p + facet_ragged_rows(vars(drv), vars(cyl), strips = "all")
 
-# Panels for each subject, with cohorts in separate columns
-p + facet_ragged_cols(
-  vars(Subject = as.character(Subject)),
-  vars(Cohort = 1 + Subject \%in\% 3:6),
-  labeller = label_both
-)
-
-# Independent y-axes for all subjects
-p + facet_ragged_cols(
-  vars(Subject = as.character(Subject)),
-  vars(Cohort = 1 + Subject \%in\% 3:6),
-  labeller = label_both,
-  scales = "free_y"
-)
+# Draw axes between panels
+p + facet_ragged_rows(vars(drv), vars(cyl), axes = "all_x")
+p + facet_ragged_rows(vars(drv), vars(cyl), axes = "all")
+}
+# Change panel alignment
+p + facet_ragged_rows(vars(drv), vars(cyl), align = "end")
 }

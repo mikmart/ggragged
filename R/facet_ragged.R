@@ -7,10 +7,11 @@
 #' nested or partially crossed relationships between faceting variables.
 #'
 #' @param rows,cols A set of variables or expressions quoted by [ggplot2::vars()],
-#'   the combinations of which define the panels to be included in the layout.
+#'   the combinations of which define the panels in the layout.
 #' @param ... Arguments reserved for future use.
-#' @param scales Should all panels share the same scales (`"fixed"`), x-axes
-#'   vary (`"free_x"`), y-axes vary (`"free_y"`), or both (`"free"`)? Panels
+#' @param scales Determines which panels share axis ranges. By default (`"fixed"`),
+#'   all panels share the same scales. Use `"free_x"` to let x-axes vary, use
+#'   `"free_y"` to let y-axes vary, or `"free"` to let both axes vary. Panels
 #'   within groups always share the scale along the grouping dimension.
 #' @param switch Determines how facet label strips are positioned. By default
 #'   (`"none"`), strips are drawn to the top and right of the panels. Use `"x"`
@@ -23,42 +24,35 @@
 #'   between panels will be suppressed if they are fixed. Use `"all_x"` to
 #'   always draw x-axes, `"all_y"` to always draw y-axes, or `"all"` to always
 #'   draw both axes.
+#' @param align Determines how panels are positioned within groups. By default
+#'   (`"start"`), panels in groups are densely packed from the start. Use
+#'   `"end"` to instead pack panels to the end of the group.
 #' @inheritParams ggplot2::facet_wrap
 #'
 #' @returns A `Facet` that can be added to a `ggplot`.
 #'
 #' @examples
-#' p <- ggplot(Indometh, aes(time, conc)) + geom_line()
+#' p <- ggplot(mpg, aes(displ, cty)) + geom_point()
+#' p + facet_ragged_rows(vars(drv), vars(cyl))
+#' p + facet_ragged_cols(vars(cyl), vars(drv))
+#' \donttest{
+#' # Allow axes to vary between panels
+#' p + facet_ragged_rows(vars(drv), vars(cyl), scales = "free_y")
+#' p + facet_ragged_rows(vars(drv), vars(cyl), scales = "free")
 #'
-#' # Panels for each subject, with cohorts on separate rows
-#' p + facet_ragged_rows(
-#'   vars(Cohort = 1 + Subject %in% 3:6),
-#'   vars(Subject = as.character(Subject)),
-#'   labeller = label_both
-#' )
+#' # Change strip label positions
+#' p + facet_ragged_rows(vars(drv), vars(cyl), switch = "y")
+#' p + facet_ragged_rows(vars(drv), vars(cyl), switch = "both")
 #'
-#' # Independent y-axes between rows of cohorts
-#' p + facet_ragged_rows(
-#'   vars(Cohort = 1 + Subject %in% 3:6),
-#'   vars(Subject = as.character(Subject)),
-#'   labeller = label_both,
-#'   scales = "free_y"
-#' )
+#' # Draw strips between panels
+#' p + facet_ragged_rows(vars(drv), vars(cyl), strips = "all")
 #'
-#' # Panels for each subject, with cohorts in separate columns
-#' p + facet_ragged_cols(
-#'   vars(Subject = as.character(Subject)),
-#'   vars(Cohort = 1 + Subject %in% 3:6),
-#'   labeller = label_both
-#' )
-#'
-#' # Independent y-axes for all subjects
-#' p + facet_ragged_cols(
-#'   vars(Subject = as.character(Subject)),
-#'   vars(Cohort = 1 + Subject %in% 3:6),
-#'   labeller = label_both,
-#'   scales = "free_y"
-#' )
+#' # Draw axes between panels
+#' p + facet_ragged_rows(vars(drv), vars(cyl), axes = "all_x")
+#' p + facet_ragged_rows(vars(drv), vars(cyl), axes = "all")
+#' }
+#' # Change panel alignment
+#' p + facet_ragged_rows(vars(drv), vars(cyl), align = "end")
 #' @name facet_ragged
 NULL
 
@@ -100,6 +94,7 @@ FacetRagged <- ggproto("FacetRagged", Facet,
     table <- self$init_gtable(panels, layout, ranges, coord, theme, params)
     table <- self$attach_axes(table, layout, ranges, coord, theme, params)
     table <- self$attach_strips(table, layout, theme, params)
+    table <- self$finalise_gtable(table, layout, params)
     table
   },
 
@@ -125,7 +120,7 @@ FacetRagged <- ggproto("FacetRagged", Facet,
   },
 
   attach_axes = function(table, layout, ranges, coord, theme, params) {
-    axes <- render_axes(ranges, ranges, coord, theme)
+    axes <- render_unique_axes(layout, ranges, coord, theme)
     axes <- list(
       t = lapply(axes$x, `[[`, "top"),
       b = lapply(axes$x, `[[`, "bottom"),
@@ -139,7 +134,7 @@ FacetRagged <- ggproto("FacetRagged", Facet,
     # Render strips with faceting variable data
     cols_data <- layout[names(params$cols)]
     rows_data <- layout[names(params$rows)]
-    strips <- render_strips(cols_data, rows_data, params$labeller, theme)
+    strips <- render_unique_strips(cols_data, rows_data, params$labeller, theme)
     strips <- c(strips$x, strips$y)
 
     # Zero out strips which shouldn't be added
@@ -155,50 +150,72 @@ FacetRagged <- ggproto("FacetRagged", Facet,
   }
 )
 
+render_unique_axes <- function(layout, ranges, coord, theme) {
+  if (inherits(coord, "CoordFlip")) {
+    # Switch the scales back
+    layout[c("SCALE_X", "SCALE_Y")] <- layout[c("SCALE_Y", "SCALE_X")]
+  }
+
+  # Identify groups
+  SCALE_X <- match(layout$SCALE_X, unique(layout$SCALE_X))
+  SCALE_Y <- match(layout$SCALE_Y, unique(layout$SCALE_Y))
+
+  # Render representatives
+  x_rep <- ranges[match(unique(SCALE_X), SCALE_X)]
+  y_rep <- ranges[match(unique(SCALE_Y), SCALE_Y)]
+  axes <- render_axes(x_rep, y_rep, coord, theme)
+
+  # Distribute to groups
+  axes$x <- axes$x[SCALE_X]
+  axes$y <- axes$y[SCALE_Y]
+  axes
+}
+
+render_unique_strips <- function(x, y, labeller, theme) {
+  # Identify groups
+  STRIP_X <- vctrs::vec_match(x, vctrs::vec_unique(x))
+  STRIP_Y <- vctrs::vec_match(y, vctrs::vec_unique(y))
+
+  # Render representatives
+  x_rep <- vctrs::vec_slice(x, match(unique(STRIP_X), STRIP_X))
+  y_rep <- vctrs::vec_slice(y, match(unique(STRIP_Y), STRIP_Y))
+  strips <- render_strips(x_rep, y_rep, labeller, theme)
+
+  # Distribute to groups
+  strips$x <- lapply(strips$x, function(x) x[STRIP_X])
+  strips$y <- lapply(strips$y, function(y) y[STRIP_Y])
+  strips
+}
+
 add_panel_decorations <- function(table, layout, grobs, kind) {
   kind <- rlang::arg_match0(kind, c("axis", "strip"))
 
   # Add rows for horizontal decorations
-  for (t in rev(panel_rows(table)$t)) {
-    table <- gtable_add_rows(table, max_height(grobs$t), t - 1)
-    table <- gtable_add_rows(table, max_height(grobs$b), t + 1)
+  height_t <- max_height(grobs$t)
+  height_b <- max_height(grobs$b)
+  for (t in sort(panel_rows(table)$t, decreasing = TRUE)) {
+    table <- gtable_add_rows(table, height_t, t - 1)
+    table <- gtable_add_rows(table, height_b, t + 1)
   }
 
   # Add columns for vertical decorations
-  for (l in rev(panel_cols(table)$l)) {
-    table <- gtable_add_cols(table, max_width(grobs$l), l - 1)
-    table <- gtable_add_cols(table, max_width(grobs$r), l + 1)
+  width_l <- max_width(grobs$l)
+  width_r <- max_width(grobs$r)
+  for (l in sort(panel_cols(table)$l, decreasing = TRUE)) {
+    table <- gtable_add_cols(table, width_l, l - 1)
+    table <- gtable_add_cols(table, width_r, l + 1)
   }
 
   # Find panel positions after layout changes
-  panel_rows_pos <- panel_rows(table)
-  panel_cols_pos <- panel_cols(table)
-
-  t <- panel_rows_pos$t[layout$ROW] - 1
-  b <- panel_rows_pos$b[layout$ROW] + 1
-  l <- panel_cols_pos$l[layout$COL] - 1
-  r <- panel_cols_pos$r[layout$COL] + 1
+  panel_pos <- gtable_get_grob_position(table, sprintf("panel-%d", layout$PANEL))
 
   # Add decorations around panels
-  table <- gtable_add_grob(table, grobs$t, t, l + 1, name = sprintf("%s-t-%d", kind, layout$PANEL))
-  table <- gtable_add_grob(table, grobs$b, b, l + 1, name = sprintf("%s-b-%d", kind, layout$PANEL))
-  table <- gtable_add_grob(table, grobs$l, t + 1, l, name = sprintf("%s-l-%d", kind, layout$PANEL))
-  table <- gtable_add_grob(table, grobs$r, t + 1, r, name = sprintf("%s-r-%d", kind, layout$PANEL))
+  table <- gtable_add_grob(table, grobs$t, panel_pos$t - 1, panel_pos$l, name = sprintf("%s-t-%d", kind, layout$PANEL))
+  table <- gtable_add_grob(table, grobs$b, panel_pos$b + 1, panel_pos$l, name = sprintf("%s-b-%d", kind, layout$PANEL))
+  table <- gtable_add_grob(table, grobs$l, panel_pos$t, panel_pos$l - 1, name = sprintf("%s-l-%d", kind, layout$PANEL))
+  table <- gtable_add_grob(table, grobs$r, panel_pos$t, panel_pos$r + 1, name = sprintf("%s-r-%d", kind, layout$PANEL))
 
   table
-}
-
-set_strip_viewport <- function(strip, side) {
-  strip$vp <- switch(
-    substr(side, 1, 1),
-    # TODO: `clip = "off"` not needed in ggplot2 dev version (3.5.1.9000), could be removed in the future.
-    t = grid::viewport(clip = "off", height = grid::grobHeight(strip), y = unit(0, "npc"), just = "bottom"),
-    b = grid::viewport(clip = "off", height = grid::grobHeight(strip), y = unit(1, "npc"), just = "top"),
-    l = grid::viewport(clip = "off", width = grid::grobWidth(strip), x = unit(1, "npc"), just = "right"),
-    r = grid::viewport(clip = "off", width = grid::grobWidth(strip), x = unit(0, "npc"), just = "left"),
-    stop("internal error: invalid side: ", side)
-  )
-  strip
 }
 
 cull_inner_panel_decorations <- function(table, layout, sides, kind) {
@@ -228,26 +245,8 @@ cull_inner_panel_decorations <- function(table, layout, sides, kind) {
   table
 }
 
-panels_with_neighbour <- function(layout, side) {
-  neighbour <- switch(
-    side,
-    t = list(PANEL = layout$PANEL, ROW = layout$ROW - 1, COL = layout$COL),
-    b = list(PANEL = layout$PANEL, ROW = layout$ROW + 1, COL = layout$COL),
-    l = list(PANEL = layout$PANEL, ROW = layout$ROW, COL = layout$COL - 1),
-    r = list(PANEL = layout$PANEL, ROW = layout$ROW, COL = layout$COL + 1),
-    stop("internal error: invalid side: ", side)
-  )
-  merge(layout[c("ROW", "COL")], neighbour)$PANEL
-}
-
-margin_panels <- function(layout, side) {
-  setdiff(layout$PANEL, panels_with_neighbour(layout, side))
-}
-
 shift_inner_margin_axes <- function(table, layout, side) {
-  for (panel in margin_panels(layout, side)) {
-    if (is_panel_on_outer_margin(layout, panel, side)) next
-
+  for (panel in inner_margin_panels(layout, side)) {
     # Get the strip and axis, bailing if either isn't there
     strip_name <- sprintf("strip-%s-%d", side, panel)
     strip <- gtable_get_grob(table, strip_name)
@@ -271,13 +270,15 @@ shift_inner_margin_axes <- function(table, layout, side) {
   table
 }
 
-is_panel_on_outer_margin <- function(layout, panel, side) {
-  switch(
-    side,
-    t = layout[match(panel, layout$PANEL), "ROW"] == min(layout$ROW),
-    b = layout[match(panel, layout$PANEL), "ROW"] == max(layout$ROW),
-    l = layout[match(panel, layout$PANEL), "COL"] == min(layout$COL),
-    r = layout[match(panel, layout$PANEL), "COL"] == max(layout$COL),
+set_strip_viewport <- function(strip, side) {
+  strip$vp <- switch(
+    substr(side, 1, 1),
+    # TODO: `clip = "off"` not needed in ggplot2 dev version (3.5.1.9000), could be removed in the future.
+    t = grid::viewport(clip = "off", height = grid::grobHeight(strip), y = unit(0, "npc"), just = "bottom"),
+    b = grid::viewport(clip = "off", height = grid::grobHeight(strip), y = unit(1, "npc"), just = "top"),
+    l = grid::viewport(clip = "off", width = grid::grobWidth(strip), x = unit(1, "npc"), just = "right"),
+    r = grid::viewport(clip = "off", width = grid::grobWidth(strip), x = unit(0, "npc"), just = "left"),
     stop("internal error: invalid side: ", side)
   )
+  strip
 }

@@ -1,7 +1,7 @@
 #' @include facet_ragged.R
 #' @rdname facet_ragged
 #' @export
-facet_ragged_rows <- function(rows, cols, ..., scales = "fixed", switch = "none", strips = "margins", axes = "margins", labeller = "label_value") {
+facet_ragged_rows <- function(rows, cols, ..., scales = "fixed", switch = "none", strips = "margins", axes = "margins", align = "start", labeller = "label_value") {
   rlang::check_dots_empty()
   switch <- switch %||% "none" # Compatibility with old default value NULL
 
@@ -9,6 +9,7 @@ facet_ragged_rows <- function(rows, cols, ..., scales = "fixed", switch = "none"
   switch <- rlang::arg_match0(switch, c("none", "x", "y", "both"))
   strips <- rlang::arg_match0(strips, c("margins", "all"))
   axes <- rlang::arg_match0(axes, c("margins", "all_x", "all_y", "all"))
+  align <- rlang::arg_match0(align, c("start", "end"))
 
   ggproto(
     NULL,
@@ -20,6 +21,7 @@ facet_ragged_rows <- function(rows, cols, ..., scales = "fixed", switch = "none"
       switch = switch,
       strips = strips,
       axes = axes,
+      align = align,
       labeller = labeller
     )
   )
@@ -38,25 +40,17 @@ FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
       drop = TRUE
     )
     panels <- vctrs::vec_sort(panels)
-    layout <- layout_ragged_rows(panels[names(rows)], params$free)
+    layout <- layout_ragged_rows(panels[names(rows)], params$free, params$align)
 
     cbind(layout, panels)
   },
 
-  attach_axes = function(table, layout, ranges, coord, theme, params) {
-    table <- FacetRagged$attach_axes(table, layout, ranges, coord, theme, params)
-
+  finalise_gtable = function(table, layout, params) {
     if (!params$axes$x && !params$free$x)
       table <- cull_inner_panel_decorations(table, layout, sides = c("t", "b"), kind = "axis")
 
     if (!params$axes$y)
       table <- cull_inner_panel_decorations(table, layout, sides = c("l", "r"), kind = "axis")
-
-    table
-  },
-
-  attach_strips = function(table, layout, theme, params) {
-    table <- FacetRagged$attach_strips(table, layout, theme, params)
 
     if (params$strips == "margins")
       table <- cull_inner_panel_decorations(table, layout, sides = c("l", "r"), kind = "strip")
@@ -64,3 +58,10 @@ FacetRaggedRows <- ggproto("FacetRaggedRows", FacetRagged,
     table
   }
 )
+
+layout_ragged_rows <- function(x, free = list(), align = "start") {
+  layout <- layout_ragged(x, groups = "rows", align = align)
+  layout$SCALE_X <- if (!isTRUE(free$x)) 1L else layout$PANEL
+  layout$SCALE_Y <- if (!isTRUE(free$y)) 1L else layout$ROW
+  layout
+}

@@ -85,7 +85,7 @@ nested or partially crossed relationships between faceting variables.
 p <- ggplot(mpg, aes(displ, cty)) + geom_point()
 p + facet_ragged_rows(vars(drv), vars(cyl))
 p + facet_ragged_cols(vars(cyl), vars(drv))
-
+\donttest{
 # Allow axes to vary between panels
 p + facet_ragged_rows(vars(drv), vars(cyl), scales = "free_y")
 p + facet_ragged_rows(vars(drv), vars(cyl), scales = "free")
@@ -100,10 +100,7 @@ p + facet_ragged_rows(vars(drv), vars(cyl), strips = "all")
 # Draw axes between panels
 p + facet_ragged_rows(vars(drv), vars(cyl), axes = "all_x")
 p + facet_ragged_rows(vars(drv), vars(cyl), axes = "all")
-
+}
 # Change panel alignment
 p + facet_ragged_rows(vars(drv), vars(cyl), align = "end")
-
-# Format strip labels
-p + facet_ragged_rows(vars(drv), vars(cyl), labeller = "label_both")
 }

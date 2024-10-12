@@ -2,3 +2,7 @@ url: https://mikmart.github.io/ggragged/
 template:
   bootstrap: 5
 
+news:
+  releases:
+    - text: ggragged 0.2.0
+      href: https://www.mikkomarttila.com/2024/10/11/ggragged-0-2-0/

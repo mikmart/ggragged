@@ -1,6 +1,8 @@
-#' @importFrom rlang %||%
 grob_shift_viewport <- function(grob, x = NULL, y = NULL) {
-  vp <- grob$vp %||% return(grob)
+  vp <- grob$vp
+  if (is.null(vp)) {
+    return(grob)
+  }
   if (!is.null(x)) {
     vp$x <- vp$x + x
   }
